@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+// DAO contract
+
 contract DAOContract {
     mapping(address => bool) public members;
     mapping(address => bool) public canVote;

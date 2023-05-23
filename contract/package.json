@@ -9,6 +9,8 @@
     "hardhat": "^2.10.1"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.6.1",
+    "@openzeppelin/contracts": "^4.8.3",
     "@thirdweb-dev/contracts": "^3"
   }
 }

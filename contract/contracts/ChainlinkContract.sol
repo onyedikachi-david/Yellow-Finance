@@ -1,10 +1,61 @@
+// // SPDX-License-Identifier: MIT
+// pragma solidity ^0.8.9;
+
+// contract ChainlinkContract {
+//     function determinePotWinner(address[] memory _participants) external view returns (address) {
+//         // Integrate the necessary Chainlink oracles to determine the pot winner
+//         // Implement the logic to select the winner from the list of participants
+//         // Return the address of the winner
+//     }
+// }
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-contract ChainlinkContract {
-    function determinePotWinner(address[] memory _participants) external view returns (address) {
-        // Integrate the necessary Chainlink oracles to determine the pot winner
-        // Implement the logic to select the winner from the list of participants
+import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
+
+contract ChainlinkContract is VRFConsumerBase {
+    address[] private participants;
+    uint256 private randomResult;
+    bytes32 private requestId;
+    uint256 private seed;
+    
+    mapping(bytes32 => address) private requestIdToSender;
+
+    // Chainlink VRF variables
+    bytes32 private keyHash;
+    uint256 private fee;
+
+    constructor(address _vrfCoordinator, address _linkToken, bytes32 _keyHash, uint256 _fee) 
+        VRFConsumerBase(_vrfCoordinator, _linkToken)
+    {
+        keyHash = _keyHash;
+        fee = _fee;
+    }
+
+    function determinePotWinner(address[] memory _participants) external returns (address) {
+        require(_participants.length > 0, "No participants");
+
+        participants = _participants;
+        seed = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, participants.length)));
+
+        requestId = requestRandomness(keyHash, fee, seed);
+
+        // Return a temporary value until the randomness is received and winner is determined
+        return address(0);
+    }
+
+    function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
+        require(_requestId == requestId, "Invalid request ID");
+
+        randomResult = _randomness % participants.length;
+        address winner = participants[randomResult];
+
+        // Perform further logic with the winner address, such as pot allocation
+
         // Return the address of the winner
+        // Note: You may want to emit an event or perform other actions with the winner address
+        // This example simply returns the address
+        return winner;
     }
 }
