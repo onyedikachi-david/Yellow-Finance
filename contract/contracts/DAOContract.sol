@@ -6,15 +6,25 @@ pragma solidity ^0.8.9;
 contract DAOContract {
     mapping(address => bool) public members;
     mapping(address => bool) public canVote;
+    address public owner;
 
-    function addMember(address _member) external {
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addMember(address _member) external onlyOwner {
         require(!members[_member], "Member already exists");
 
         members[_member] = true;
         canVote[_member] = true;
     }
 
-    function removeMember(address _member) external {
+    function removeMember(address _member) external onlyOwner {
         require(members[_member], "Member does not exist");
 
         delete members[_member];

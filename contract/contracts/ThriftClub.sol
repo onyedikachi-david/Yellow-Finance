@@ -1,23 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-// Main contract.
-
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "./DAOContract.sol";
+import "./ChainlinkContract.sol";
+import "./IDAOContract.sol";
 
 contract ThriftClub is IERC721Receiver {
     address public token;
     uint public cycleDuration;
     uint public contributionAmount;
-    uint public max_number;
+    uint public maxParticipant;
+    string public name;
+    string public description;
 
     enum TANDA_STATE {
         OPEN,
         CLOSED,
         IN_PROGRESS,
-        COMPLETED,
+        COMPLETED
     }
 
     mapping(address => bool) public isParticipant;
@@ -27,7 +30,7 @@ contract ThriftClub is IERC721Receiver {
     IERC721 public nftContract;
 
     // DAO contract
-    DAOContract public daoContract;
+    IDAOContract public daoContract;
 
     // Chainlink contract
     ChainlinkContract public chainlinkContract;
@@ -35,14 +38,24 @@ contract ThriftClub is IERC721Receiver {
     event ParticipantJoined(address indexed participant);
     event CycleStarted(address indexed winner);
 
-    constructor(address _token, uint _cycleDuration, uint _contributionAmount, uint _max_number) {
+    constructor(
+        address _token,
+        uint256 _cycleDuration,
+        uint256 _contributionAmount,
+        uint256 _maxParticipant,
+        string memory _name,
+        string memory _description,
+        address _nftContract,
+        address _daoContract
+    ) {
         token = _token;
         cycleDuration = _cycleDuration;
         contributionAmount = _contributionAmount;
-        max_number = _max_number;
-
-        nftContract = IERC721(msg.sender); // Assuming the NFT contract is deployed by the same deployer as ThriftClub
-        daoContract = new DAOContract();
+        maxParticipant = _maxParticipant;
+        name = _name;
+        description = _description;
+        nftContract = IERC721(_nftContract);
+        daoContract = IDAOContract(_daoContract);
         chainlinkContract = new ChainlinkContract();
     }
 
@@ -50,7 +63,13 @@ contract ThriftClub is IERC721Receiver {
         require(!isParticipant[msg.sender], "Already a participant");
         require(isValidToken(token), "Invalid token");
 
-        nftContract.safeTransferFrom(address(this), msg.sender, participants.length); // Mint an NFT for the participant
+        nftContract.safeTransferFrom(
+            address(this),
+            msg.sender,
+            participants.length
+        );
+        // Mint an NFT for the participant
+
         participants.push(msg.sender);
         isParticipant[msg.sender] = true;
 
@@ -68,19 +87,19 @@ contract ThriftClub is IERC721Receiver {
         // Distribute the pot to the winner
     }
 
-    function changeMembershipSize(uint _newSize) external {
+    function changeMembershipSize(uint256 _newSize) external {
         require(daoContract.canVote(msg.sender), "Not authorized to vote");
 
         // Use DAO voting to decide on changing the membership size
     }
 
-    function changePenaltyFee(uint _newFee) external {
+    function changePenaltyFee(uint256 _newFee) external {
         require(daoContract.canVote(msg.sender), "Not authorized to vote");
 
         // Use DAO voting to decide on changing the penalty fee for new members
     }
 
-    function changeContributionAmount(uint _newAmount) external {
+    function changeContributionAmount(uint256 _newAmount) external {
         require(daoContract.canVote(msg.sender), "Not authorized to vote");
 
         // Use DAO voting to decide on changing the contribution amount for each cycle
@@ -88,7 +107,7 @@ contract ThriftClub is IERC721Receiver {
 
     // Check if the given token is a valid token for contribution
     function isValidToken(address _token) internal pure returns (bool) {
-        return (_token == address(0x...)); // Replace with the address of the allowed tokens
+        return (_token == address(0)); // Replace with the address of the allowed tokens
     }
 
     // IERC721Receiver implementation
