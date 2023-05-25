@@ -20,6 +20,7 @@ contract ThriftClubFactory {
         address _token,
         uint256 _cycleDuration,
         uint256 _contributionAmount,
+        uint256 _penalty,
         uint256 _maxParticipant,
         string memory _name,
         string memory _description
@@ -35,6 +36,7 @@ contract ThriftClubFactory {
             _token,
             _cycleDuration,
             _contributionAmount,
+            _penalty,
             _maxParticipant,
             _name,
             _description,
@@ -44,6 +46,7 @@ contract ThriftClubFactory {
 
         nftContract.mint(address(newThriftClub));
         clubToNFT[address(newThriftClub)] = address(nftContract);
+        clubtoDAO[address(newThriftClub)] = address(daoContract);
 
         thriftClubs.push(address(newThriftClub));
         emit ThriftClubCreated(address(newThriftClub), msg.sender);
@@ -64,6 +67,14 @@ contract ThriftClubFactory {
             "NFT not found for the club"
         );
         return clubToNFT[_thriftClub];
+    }
+
+    function getDAO(address _thriftClub) external view returns (address) {
+        require(
+            clubtoDAO[_thriftClub] != address(0),
+            "NFT not found for the club"
+        );
+        return clubtoDAO[_thriftClub];
     }
 
     function substring(

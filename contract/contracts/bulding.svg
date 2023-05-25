@@ -1,0 +1,350 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="736pt" height="956pt" viewBox="0.00 0.00 735.99 956.00">
+<g id="graph0" class="graph" transform="translate(17.180061929234313,929.2822364821682) scale(0.9256046766377688)" data-name="G">
+
+<polygon fill="#2e3e56" stroke="none" points="-4,4 -4,-952 731.99,-952 731.99,4 -4,4" style=""/>
+<g id="clust1" class="cluster" data-name="clusterThriftClub">
+
+<path fill="#445773" stroke="#445773" d="M20,-456C20,-456 707.99,-456 707.99,-456 713.99,-456 719.99,-462 719.99,-468 719.99,-468 719.99,-791 719.99,-791 719.99,-797 713.99,-803 707.99,-803 707.99,-803 20,-803 20,-803 14,-803 8,-797 8,-791 8,-791 8,-468 8,-468 8,-462 14,-456 20,-456" style=""/>
+<text text-anchor="middle" x="364" y="-786.4" font-family="Times,serif" font-size="14.00" fill="#f0f0f0" style="">ThriftClub</text>
+</g>
+<g id="clust2" class="cluster" data-name="clusterMAXIMUM_FEE_USD">
+
+<path fill="#3b4b63" stroke="#e8726d" stroke-dasharray="5,2" d="M301.22,-317C301.22,-317 463.33,-317 463.33,-317 469.33,-317 475.33,-323 475.33,-329 475.33,-329 475.33,-436 475.33,-436 475.33,-442 469.33,-448 463.33,-448 463.33,-448 301.22,-448 301.22,-448 295.22,-448 289.22,-442 289.22,-436 289.22,-436 289.22,-329 289.22,-329 289.22,-323 295.22,-317 301.22,-317" style=""/>
+<text text-anchor="middle" x="382.27" y="-431.4" font-family="Times,serif" font-size="14.00" fill="#f0f0f0" style="">MAXIMUM_FEE_USD</text>
+</g>
+<g id="clust3" class="cluster" data-name="clusterIERC721">
+
+<path fill="#3b4b63" stroke="#e8726d" stroke-dasharray="5,2" d="M306.06,-232C306.06,-232 458.49,-232 458.49,-232 464.49,-232 470.49,-238 470.49,-244 470.49,-244 470.49,-297 470.49,-297 470.49,-303 464.49,-309 458.49,-309 458.49,-309 306.06,-309 306.06,-309 300.06,-309 294.06,-303 294.06,-297 294.06,-297 294.06,-244 294.06,-244 294.06,-238 300.06,-232 306.06,-232" style=""/>
+<text text-anchor="middle" x="382.27" y="-292.4" font-family="Times,serif" font-size="14.00" fill="#f0f0f0" style="">IERC721</text>
+</g>
+<g id="clust4" class="cluster" data-name="clusterIDAOContract">
+
+<path fill="#3b4b63" stroke="#e8726d" stroke-dasharray="5,2" d="M328.58,-93C328.58,-93 435.97,-93 435.97,-93 441.97,-93 447.97,-99 447.97,-105 447.97,-105 447.97,-212 447.97,-212 447.97,-218 441.97,-224 435.97,-224 435.97,-224 328.58,-224 328.58,-224 322.58,-224 316.58,-218 316.58,-212 316.58,-212 316.58,-105 316.58,-105 316.58,-99 322.58,-93 328.58,-93" style=""/>
+<text text-anchor="middle" x="382.27" y="-207.4" font-family="Times,serif" font-size="14.00" fill="#f0f0f0" style="">IDAOContract</text>
+</g>
+<g id="clust5" class="cluster" data-name="clusterChainlinkContract">
+
+<path fill="#3b4b63" stroke="#e8726d" stroke-dasharray="5,2" d="M294.79,-8C294.79,-8 469.76,-8 469.76,-8 475.76,-8 481.76,-14 481.76,-20 481.76,-20 481.76,-73 481.76,-73 481.76,-79 475.76,-85 469.76,-85 469.76,-85 294.79,-85 294.79,-85 288.79,-85 282.79,-79 282.79,-73 282.79,-73 282.79,-20 282.79,-20 282.79,-14 288.79,-8 294.79,-8" style=""/>
+<text text-anchor="middle" x="382.27" y="-68.4" font-family="Times,serif" font-size="14.00" fill="#f0f0f0" style="">ChainlinkContract</text>
+</g>
+<g id="clust6" class="cluster" data-name="cluster_01">
+
+<polygon fill="#2e3e56" stroke="black" points="62.39,-811 62.39,-940 417.27,-940 417.27,-811 62.39,-811" style=""/>
+<text text-anchor="middle" x="239.83" y="-923.4" font-family="Times,serif" font-size="14.00" style="">Legend</text>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt; -->
+<g id="node1" class="node" pointer-events="visible" data-name="ThriftClub.&lt;Constructor&gt;">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="382.27" cy="-747" rx="67.55" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-742.8" font-family="Times,serif" font-size="14.00" style="">&lt;Constructor&gt;</text>
+</g>
+<!-- ThriftClub.AggregatorV3Interface -->
+<g id="node9" class="node" pointer-events="visible" data-name="ThriftClub.AggregatorV3Interface">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="610.87" cy="-752" rx="101.24" ry="18" style=""/>
+<text text-anchor="middle" x="610.87" y="-747.8" font-family="Times,serif" font-size="14.00" style="">AggregatorV3Interface</text>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.AggregatorV3Interface -->
+<g id="edge1" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.AggregatorV3Interface">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M410.61,-729.27C450.55,-719.56 525.06,-720.32 570.79,-730.14" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="569.66,-733.47 580.21,-732.5 571.36,-726.68 569.66,-733.47" style=""/>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.AggregatorV3Interface -->
+<g id="edge2" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.AggregatorV3Interface">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M439.87,-736.38C466.36,-735.3 498.43,-735.62 527.54,-737.14" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="527.03,-740.62 537.22,-737.72 527.44,-733.63 527.03,-740.62" style=""/>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.AggregatorV3Interface -->
+<g id="edge3" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.AggregatorV3Interface">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M450.95,-748.49C465.22,-748.81 480.64,-749.15 496.07,-749.49" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="495.92,-752.99 505.99,-749.71 496.07,-745.99 495.92,-752.99" style=""/>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.AggregatorV3Interface -->
+<g id="edge4" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.AggregatorV3Interface">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M434.69,-759.66C458.25,-761.85 486.96,-763.1 514.27,-763.24" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="514.08,-766.74 524.08,-763.23 514.08,-759.74 514.08,-766.74" style=""/>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.AggregatorV3Interface -->
+<g id="edge5" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.AggregatorV3Interface">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M407.52,-765.02C445.51,-776.92 519.58,-779.97 566.79,-772.78" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="567.16,-776.27 576.37,-771.02 565.9,-769.38 567.16,-776.27" style=""/>
+</g>
+<!-- ThriftClub.address -->
+<g id="node10" class="node" pointer-events="visible" data-name="ThriftClub.address">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="610.87" cy="-590" rx="40" ry="18" style=""/>
+<text text-anchor="middle" x="610.87" y="-585.8" font-family="Times,serif" font-size="14.00" style="">address</text>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.address -->
+<g id="edge6" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M401.17,-728.35C423.16,-719.35 460.22,-714.59 481.76,-693 515.27,-659.42 476.18,-623.51 509.76,-590 528.84,-570.95 559.86,-564.95 582.32,-568.66" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="581.22,-571.98 591.79,-571.26 583.07,-565.23 581.22,-571.98" style=""/>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.address -->
+<g id="edge7" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M434.97,-734.53C451.82,-730.28 469.36,-723.42 481.76,-711 515.27,-677.42 476.18,-641.51 509.76,-608 522.82,-594.97 541.47,-588.04 559.14,-585" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="559.54,-588.48 569.04,-583.79 558.69,-581.53 559.54,-588.48" style=""/>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.address -->
+<g id="edge8" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M451.08,-747.25C462.46,-743.35 473.3,-737.47 481.76,-729 515.27,-695.42 476.18,-659.51 509.76,-626 523.36,-612.43 543.02,-605.48 561.33,-601.34" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="561.91,-604.79 571.03,-599.41 560.54,-597.93 561.91,-604.79" style=""/>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.address -->
+<g id="edge9" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M400.41,-765.71C422.3,-773.46 459.97,-768.84 481.76,-747 515.27,-713.42 476.18,-677.51 509.76,-644 528.72,-625.08 559.46,-619.03 581.88,-611.98" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="582.91,-615.33 591.13,-608.64 580.53,-608.75 582.91,-615.33" style=""/>
+</g>
+<!-- ThriftClub.IERC721 -->
+<g id="node11" class="node" pointer-events="visible" data-name="ThriftClub.IERC721">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="610.87" cy="-644" rx="47.54" ry="18" style=""/>
+<text text-anchor="middle" x="610.87" y="-639.8" font-family="Times,serif" font-size="14.00" style="">IERC721</text>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.IERC721 -->
+<g id="edge10" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.IERC721">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M443.79,-738.36C457.25,-734.37 470.76,-728.53 481.76,-720 501.58,-704.63 489.9,-686.33 509.76,-671 521.6,-661.85 536.32,-655.8 550.78,-651.79" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="551.51,-655.22 560.41,-649.48 549.87,-648.41 551.51,-655.22" style=""/>
+</g>
+<!-- ThriftClub.IDAOContract -->
+<g id="node12" class="node" pointer-events="visible" data-name="ThriftClub.IDAOContract">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="610.87" cy="-698" rx="68.35" ry="18" style=""/>
+<text text-anchor="middle" x="610.87" y="-693.8" font-family="Times,serif" font-size="14.00" style="">IDAOContract</text>
+</g>
+<!-- ThriftClub.&lt;Constructor&gt;&#45;&gt;ThriftClub.IDAOContract -->
+<g id="edge11" class="edge" data-name="ThriftClub.&lt;Constructor&gt;-&gt;ThriftClub.IDAOContract">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M437.26,-735.33C468.95,-728.47 509.26,-719.76 542.96,-712.47" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="543.52,-715.93 552.56,-710.39 542.04,-709.09 543.52,-715.93" style=""/>
+</g>
+<!-- ThriftClub.joinThriftClub -->
+<g id="node2" class="node" pointer-events="visible" data-name="ThriftClub.joinThriftClub">
+
+<ellipse fill="#ff9797" stroke="brown" stroke-width="3" cx="135.39" cy="-752" rx="67.23" ry="18" style=""/>
+<text text-anchor="middle" x="135.39" y="-747.8" font-family="Times,serif" font-size="14.00" style="">joinThriftClub</text>
+</g>
+<!-- ThriftClub.isValidToken -->
+<g id="node7" class="node" pointer-events="visible" data-name="ThriftClub.isValidToken">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-693" rx="63.71" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-688.8" font-family="Times,serif" font-size="14.00" style="">isValidToken</text>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;ThriftClub.isValidToken -->
+<g id="edge12" class="edge" data-name="ThriftClub.joinThriftClub-&gt;ThriftClub.isValidToken">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M189.79,-740.1C210.16,-735.49 233.57,-730.1 254.79,-725 276.13,-719.87 299.43,-714.04 320.16,-708.77" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="320.93,-712.19 329.75,-706.32 319.2,-705.4 320.93,-712.19" style=""/>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;ThriftClub.address -->
+<g id="edge13" class="edge" data-name="ThriftClub.joinThriftClub-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M160.26,-733.92C186.93,-726.64 229.66,-722.66 254.79,-698 291.71,-661.76 243.13,-618.23 282.79,-585 369.08,-512.68 517.31,-538.99 580.24,-567.14" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="578.41,-570.14 588.93,-571.43 581.51,-563.87 578.41,-570.14" style=""/>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;ThriftClub.address -->
+<g id="edge16" class="edge" data-name="ThriftClub.joinThriftClub-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M195.5,-742.59C216.67,-738.69 239.14,-731.36 254.79,-716 291.71,-679.76 243.13,-636.23 282.79,-603 363.93,-535 499.84,-554.2 568.09,-573.24" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="566.93,-576.54 577.51,-576.03 568.92,-569.83 566.93,-576.54" style=""/>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;ThriftClub.address -->
+<g id="edge20" class="edge" data-name="ThriftClub.joinThriftClub-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M199.79,-758.78C219.66,-755.67 240.19,-748.32 254.79,-734 291.71,-697.76 243.13,-654.23 282.79,-621 360.3,-556.04 487.79,-570.66 558.54,-582.67" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="557.63,-586.07 568.08,-584.34 558.84,-579.17 557.63,-586.07" style=""/>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;ThriftClub.address -->
+<g id="edge22" class="edge" data-name="ThriftClub.joinThriftClub-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M153.91,-770.75C179.65,-781.16 227.56,-778.73 254.79,-752 291.71,-715.76 243.13,-672.23 282.79,-639 360.24,-574.09 487.6,-588.64 558.38,-594.64" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="558.07,-598.12 568.31,-595.43 558.62,-591.15 558.07,-598.12" style=""/>
+</g>
+<!-- ThriftClub.IERC20 -->
+<g id="node13" class="node" pointer-events="visible" data-name="ThriftClub.IERC20">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-639" rx="42.88" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-634.8" font-family="Times,serif" font-size="14.00" style="">IERC20</text>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;ThriftClub.IERC20 -->
+<g id="edge19" class="edge" data-name="ThriftClub.joinThriftClub-&gt;ThriftClub.IERC20">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M202.2,-747.7C220.75,-743.81 239.9,-736.94 254.79,-725 277.43,-706.84 260.54,-684.65 282.79,-666 295,-655.77 310.76,-649.39 326.09,-645.43" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="326.81,-648.85 335.82,-643.28 325.3,-642.02 326.81,-648.85" style=""/>
+</g>
+<!-- MAXIMUM_FEE_USD.getMaxRate -->
+<g id="node14" class="node" pointer-events="visible" data-name="MAXIMUM_FEE_USD.getMaxRate">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-397" rx="58.46" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-392.8" font-family="Times,serif" font-size="14.00" style="">getMaxRate</text>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;MAXIMUM_FEE_USD.getMaxRate -->
+<g id="edge14" class="edge" data-name="ThriftClub.joinThriftClub-&gt;MAXIMUM_FEE_USD.getMaxRate">
+
+<path fill="none" stroke="white" stroke-width="2" d="M203.77,-750.9C222.82,-747.18 241.87,-739.6 254.79,-725 295.2,-679.33 249.27,-502.95 282.79,-452 293.33,-435.98 310.21,-424.17 327.04,-415.69" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="328.25,-418.99 335.86,-411.61 325.31,-412.63 328.25,-418.99" style=""/>
+</g>
+<!-- MAXIMUM_FEE_USD.getConversionRate -->
+<g id="node15" class="node" pointer-events="visible" data-name="MAXIMUM_FEE_USD.getConversionRate">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-343" rx="85.11" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-338.8" font-family="Times,serif" font-size="14.00" style="">getConversionRate</text>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;MAXIMUM_FEE_USD.getConversionRate -->
+<g id="edge18" class="edge" data-name="ThriftClub.joinThriftClub-&gt;MAXIMUM_FEE_USD.getConversionRate">
+
+<path fill="none" stroke="white" stroke-width="2" d="M203.98,-751.08C223.04,-747.37 242.04,-739.76 254.79,-725 306.53,-665.12 232.36,-430.98 282.79,-370 286.51,-365.5 290.91,-361.71 295.74,-358.52" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="297.14,-361.74 304.27,-353.9 293.81,-355.58 297.14,-361.74" style=""/>
+</g>
+<!-- IERC721.safeTransferFrom -->
+<g id="node16" class="node" pointer-events="visible" data-name="IERC721.safeTransferFrom">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-258" rx="80.43" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-253.8" font-family="Times,serif" font-size="14.00" style="">safeTransferFrom</text>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;IERC721.safeTransferFrom -->
+<g id="edge15" class="edge" data-name="ThriftClub.joinThriftClub-&gt;IERC721.safeTransferFrom">
+
+<path fill="none" stroke="white" stroke-width="2" d="M197.6,-743.87C218.76,-740.1 240.68,-732.51 254.79,-716 314.41,-646.24 233.68,-381.52 282.79,-304 289.63,-293.21 299.38,-284.34 310.11,-277.27" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="311.65,-280.42 318.49,-272.33 308.1,-274.39 311.65,-280.42" style=""/>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;IERC721.safeTransferFrom -->
+<g id="edge21" class="edge" data-name="ThriftClub.joinThriftClub-&gt;IERC721.safeTransferFrom">
+
+<path fill="none" stroke="white" stroke-width="2" d="M196.67,-760.81C218.12,-758.32 240.47,-750.75 254.79,-734 314.41,-664.24 233.68,-399.52 282.79,-322 294.68,-303.23 315.37,-290.3 334.73,-280.93" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="336.13,-284.13 343.77,-276.79 333.22,-277.77 336.13,-284.13" style=""/>
+</g>
+<!-- IDAOContract.addMember -->
+<g id="node17" class="node" pointer-events="visible" data-name="IDAOContract.addMember">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-173" rx="57.89" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-168.8" font-family="Times,serif" font-size="14.00" style="">addMember</text>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;IDAOContract.addMember -->
+<g id="edge17" class="edge" data-name="ThriftClub.joinThriftClub-&gt;IDAOContract.addMember">
+
+<path fill="none" stroke="white" stroke-width="2" d="M197.7,-743.96C218.87,-740.2 240.78,-732.59 254.79,-716 326.17,-631.5 224.13,-312.79 282.79,-219 291.14,-205.64 303.98,-195.24 317.65,-187.55" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="319.18,-190.69 326.54,-183.07 316.04,-184.44 319.18,-190.69" style=""/>
+</g>
+<!-- ThriftClub.joinThriftClub&#45;&gt;IDAOContract.addMember -->
+<g id="edge23" class="edge" data-name="ThriftClub.joinThriftClub-&gt;IDAOContract.addMember">
+
+<path fill="none" stroke="white" stroke-width="2" d="M196.47,-760.93C218.02,-758.49 240.5,-750.91 254.79,-734 326.17,-649.5 224.13,-330.79 282.79,-237 295.29,-217.01 317.81,-203.66 338.16,-194.19" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="339.3,-197.51 347.03,-190.26 336.47,-191.11 339.3,-197.51" style=""/>
+</g>
+<!-- ThriftClub.startCycle -->
+<g id="node3" class="node" pointer-events="visible" data-name="ThriftClub.startCycle">
+
+<ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="135.39" cy="-536" rx="50.38" ry="18" style=""/>
+<text text-anchor="middle" x="135.39" y="-531.8" font-family="Times,serif" font-size="14.00" style="">startCycle</text>
+</g>
+<!-- ChainlinkContract.determinePotWinner -->
+<g id="node19" class="node" pointer-events="visible" data-name="ChainlinkContract.determinePotWinner">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-34" rx="91.47" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-29.8" font-family="Times,serif" font-size="14.00" style="">determinePotWinner</text>
+</g>
+<!-- ThriftClub.startCycle&#45;&gt;ChainlinkContract.determinePotWinner -->
+<g id="edge24" class="edge" data-name="ThriftClub.startCycle-&gt;ChainlinkContract.determinePotWinner">
+
+<path fill="none" stroke="white" stroke-width="2" d="M186.93,-537.55C211.1,-535.44 238.3,-528.32 254.79,-509 315.52,-437.85 232.78,-168.05 282.79,-89 291.72,-74.89 305.62,-64.08 320.2,-55.93" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="321.39,-59.25 328.71,-51.59 318.21,-53.01 321.39,-59.25" style=""/>
+</g>
+<!-- ThriftClub.changeMembershipSize -->
+<g id="node4" class="node" pointer-events="visible" data-name="ThriftClub.changeMembershipSize">
+
+<ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="135.39" cy="-698" rx="103.64" ry="18" style=""/>
+<text text-anchor="middle" x="135.39" y="-693.8" font-family="Times,serif" font-size="14.00" style="">changeMembershipSize</text>
+</g>
+<!-- IDAOContract.canVote -->
+<g id="node18" class="node" pointer-events="visible" data-name="IDAOContract.canVote">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="382.27" cy="-119" rx="43.42" ry="18" style=""/>
+<text text-anchor="middle" x="382.27" y="-114.8" font-family="Times,serif" font-size="14.00" style="">canVote</text>
+</g>
+<!-- ThriftClub.changeMembershipSize&#45;&gt;IDAOContract.canVote -->
+<g id="edge25" class="edge" data-name="ThriftClub.changeMembershipSize-&gt;IDAOContract.canVote">
+
+<path fill="none" stroke="white" stroke-width="2" d="M229.53,-689.48C239.17,-685.12 247.93,-679.14 254.79,-671 330.05,-581.64 209.48,-236.97 282.79,-146 293.1,-133.2 308.86,-126.13 324.77,-122.32" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="325.31,-125.78 334.49,-120.48 324.01,-118.9 325.31,-125.78" style=""/>
+</g>
+<!-- ThriftClub.changePenaltyFee -->
+<g id="node5" class="node" pointer-events="visible" data-name="ThriftClub.changePenaltyFee">
+
+<ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="135.39" cy="-644" rx="81.08" ry="18" style=""/>
+<text text-anchor="middle" x="135.39" y="-639.8" font-family="Times,serif" font-size="14.00" style="">changePenaltyFee</text>
+</g>
+<!-- ThriftClub.changePenaltyFee&#45;&gt;IDAOContract.canVote -->
+<g id="edge26" class="edge" data-name="ThriftClub.changePenaltyFee-&gt;IDAOContract.canVote">
+
+<path fill="none" stroke="white" stroke-width="2" d="M216.14,-640.33C230.94,-635.98 244.84,-628.74 254.79,-617 322.57,-537.01 216.75,-227.44 282.79,-146 293.14,-133.23 308.91,-126.17 324.82,-122.36" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="325.36,-125.82 334.53,-120.51 324.05,-118.94 325.36,-125.82" style=""/>
+</g>
+<!-- ThriftClub.changeContributionAmount -->
+<g id="node6" class="node" pointer-events="visible" data-name="ThriftClub.changeContributionAmount">
+
+<ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="135.39" cy="-590" rx="119.29" ry="18" style=""/>
+<text text-anchor="middle" x="135.39" y="-585.8" font-family="Times,serif" font-size="14.00" style="">changeContributionAmount</text>
+</g>
+<!-- ThriftClub.changeContributionAmount&#45;&gt;IDAOContract.canVote -->
+<g id="edge27" class="edge" data-name="ThriftClub.changeContributionAmount-&gt;IDAOContract.canVote">
+
+<path fill="none" stroke="white" stroke-width="2" d="M234.5,-578.91C242.16,-574.86 249.11,-569.65 254.79,-563 315.1,-492.37 224.02,-217.92 282.79,-146 293.19,-133.27 308.97,-126.22 324.88,-122.41" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="325.42,-125.87 334.59,-120.56 324.11,-118.99 325.42,-125.87" style=""/>
+</g>
+<!-- ThriftClub.isValidToken&#45;&gt;ThriftClub.address -->
+<g id="edge28" class="edge" data-name="ThriftClub.isValidToken-&gt;ThriftClub.address">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M441.48,-685.03C455.69,-681.03 470.13,-675.02 481.76,-666 501.58,-650.63 489.9,-632.33 509.76,-617 523.5,-606.39 541.09,-599.94 557.68,-596.03" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="558.03,-599.53 567.13,-594.1 556.63,-592.67 558.03,-599.53" style=""/>
+</g>
+<!-- ThriftClub.onERC721Received -->
+<g id="node8" class="node" pointer-events="visible" data-name="ThriftClub.onERC721Received">
+
+<ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="135.39" cy="-482" rx="89.77" ry="18" style=""/>
+<text text-anchor="middle" x="135.39" y="-477.8" font-family="Times,serif" font-size="14.00" style="">onERC721Received</text>
+</g>
+<!-- key -->
+<g id="node20" class="node" pointer-events="visible" data-name="key">
+
+<polygon fill="#edad56" stroke="none" stroke-width="3" points="200.39,-907 70.39,-907 70.39,-819 200.39,-819 200.39,-907" style=""/>
+<text text-anchor="start" x="120.03" y="-888.4" font-family="Times,serif" font-size="14.00" style="">Internal Call</text>
+<text text-anchor="start" x="116.14" y="-868.4" font-family="Times,serif" font-size="14.00" style="">External Call</text>
+<text text-anchor="start" x="93.6" y="-848.4" font-family="Times,serif" font-size="14.00" style="">Defined Contract</text>
+<text text-anchor="start" x="80" y="-828.4" font-family="Times,serif" font-size="14.00" style="">Undefined Contract</text>
+</g>
+<!-- key2 -->
+<g id="node21" class="node" pointer-events="visible" data-name="key2">
+
+<polygon fill="#edad56" stroke="none" stroke-width="3" points="409.27,-907 355.27,-907 355.27,-819 409.27,-819 409.27,-907" style=""/>
+<text text-anchor="start" x="372.27" y="-888.4" font-family="Times,serif" font-size="14.00" style="">   </text>
+<text text-anchor="start" x="372.27" y="-868.4" font-family="Times,serif" font-size="14.00" style="">   </text>
+<polygon fill="#445773" stroke="none" points="370.27,-843 370.27,-863 395.27,-863 395.27,-843 370.27,-843" style=""/>
+<text text-anchor="start" x="372.27" y="-848.4" font-family="Times,serif" font-size="14.00" style="">   </text>
+<polygon fill="none" stroke="#e8726d" points="372.27,-825 372.27,-841 393.27,-841 393.27,-825 372.27,-825" style=""/>
+</g>
+<!-- key&#45;&gt;key2 -->
+<g id="edge29" class="edge" data-name="key-&gt;key2">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M193.39,-893C267.13,-893 288.7,-893 356.53,-893" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="356.25,-896.5 366.25,-893 356.25,-889.5 356.25,-896.5" style=""/>
+</g>
+<!-- key&#45;&gt;key2 -->
+<g id="edge30" class="edge" data-name="key-&gt;key2">
+
+<path fill="none" stroke="white" stroke-width="2" d="M193.39,-873C267.13,-873 288.7,-873 356.53,-873" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="356.25,-876.5 366.25,-873 356.25,-869.5 356.25,-876.5" style=""/>
+</g>
+</g>
+</svg>
