@@ -11,7 +11,40 @@ import "./DAOContract.sol";
 import "./ChainlinkContract.sol";
 import "./IDAOContract.sol";
 
-contract ThriftClub is IERC721Receiver {
+contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
+    VRFCoordinatorV2Interface COORDINATOR;
+    LinkTokenInterface LINKTOKEN;
+    // CHANGE THIS TO POLYGON MUMBAI
+    // Sepolia coordinator. For other networks,
+    // see https://docs.chain.link/docs/vrf-contracts/#configurations
+    address vrfCoordinator = 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625;
+
+    // Sepolia LINK token contract. For other networks, see
+    // https://docs.chain.link/docs/vrf-contracts/#configurations
+    address link_token_contract = 0x779877A7B0D9E8603169DdbD7836e478b4624789;
+
+    // The gas lane to use, which specifies the maximum gas price to bump to.
+    // For a list of available gas lanes on each network,
+    // see https://docs.chain.link/docs/vrf-contracts/#configurations
+    bytes32 keyHash =
+        0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c;
+
+    // A reasonable default is 100000, but this value could be different
+    // on other networks.
+    uint32 callbackGasLimit = 100000;
+
+    // The default is 3, but you can set this higher.
+    uint16 requestConfirmations = 3;
+
+    // For this example, retrieve 2 random values in one request.
+    // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
+    uint32 numWords = 2;
+
+    // Storage parameters
+    uint256[] public s_randomWords;
+    uint256 public s_requestId;
+    uint64 public s_subscriptionId;
+    address s_owner;
     // ./PriceConverter gets token price conversions for detrmining max transaction fee
     using PriceConverter for uint256;
     // Chainlink PriceFeeds - (token / USD)
@@ -73,7 +106,9 @@ contract ThriftClub is IERC721Receiver {
         string memory _description,
         address _nftContract,
         address _daoContract
-    ) {
+    ) VRFConsumerBaseV2(vrfCoordinator) {
+        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+        LINKTOKEN = LinkTokenInterface(link_token_contract);
         // Hard code these for now
         i_priceFeedNative = AggregatorV3Interface(AggregatorNative);
         i_priceFeedUSDC = AggregatorV3Interface(AggregatorUSDC);
@@ -393,6 +428,10 @@ contract ThriftClub is IERC721Receiver {
 
     function startCycle() external {
         require(participants.length > 0, "No participants");
+        require(
+            participants.length == maxParticipant,
+            "Maximum participants not reached"
+        );
 
         address winner = chainlinkContract.determinePotWinner(participants);
         emit CycleStarted(winner);
@@ -446,5 +485,23 @@ contract ThriftClub is IERC721Receiver {
         bytes calldata data
     ) external override returns (bytes4) {
         return this.onERC721Received.selector;
+    }
+
+    function requestRandomWords() external onlyOwner {
+        // Will revert if subscription is not set and funded.
+        s_requestId = COORDINATOR.requestRandomWords(
+            keyHash,
+            s_subscriptionId,
+            requestConfirmations,
+            callbackGasLimit,
+            numWords
+        );
+    }
+
+    function fulfillRandomWords(
+        uint256 /* requestId */,
+        uint256[] memory randomWords
+    ) internal override {
+        s_randomWords = randomWords;
     }
 }
