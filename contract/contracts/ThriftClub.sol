@@ -8,10 +8,31 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 // Imports token price conversioner library
 import "./PriceConverter.sol";
 import "./DAOContract.sol";
-import "./ChainlinkContract.sol";
+// import "./ChainlinkContract.sol";
 import "./IDAOContract.sol";
 
 contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
+     enum TANDA_STATE {
+        OPEN,
+        CLOSED,
+        PAYMENT_IN_PROGRESS,
+        COMPLETED
+    };
+    struct ThriftClubData {
+        address token;
+        uint256 cycleDuration;
+        uint256 contributionAmount;
+        uint256 penalty;
+        uint256 maxParticipant;
+        string name;
+        string description;
+        IERC721 nftContract;
+        IDAOContract daoContract;
+        TANDA_STATE t_state
+    };
+
+    ThriftClub memory s_thriftClub;
+
     VRFCoordinatorV2Interface COORDINATOR;
     LinkTokenInterface LINKTOKEN;
     // CHANGE THIS TO POLYGON MUMBAI
@@ -36,9 +57,9 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     // The default is 3, but you can set this higher.
     uint16 requestConfirmations = 3;
 
-    // For this example, retrieve 2 random values in one request.
+    // For this example, retrieve 1 random value in one request.
     // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-    uint32 numWords = 2;
+    uint32 numWords = 1;
 
     // Storage parameters
     uint256[] public s_randomWords;
@@ -71,12 +92,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
 
     address public i_priceFeedToken;
 
-    enum TANDA_STATE {
-        OPEN,
-        CLOSED,
-        IN_PROGRESS,
-        COMPLETED
-    }
+   
 
     mapping(address => bool) public isParticipant;
     address[] public participants;
@@ -121,16 +137,17 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         i_DAIAddress = address(DAIAddress);
         i_WBTCAddress = address(WBTCAddress);
 
-        token = _token;
-        cycleDuration = _cycleDuration;
-        contributionAmount = _contributionAmount;
-        penalty = _penalty;
-        maxParticipant = _maxParticipant;
-        name = _name;
-        description = _description;
-        nftContract = IERC721(_nftContract);
-        daoContract = IDAOContract(_daoContract);
-        chainlinkContract = new ChainlinkContract();
+        s_thriftClub.token = _token;
+        s_thriftClub.cycleDuration = _cycleDuration;
+        s_thriftClub.contributionAmount = _contributionAmount;
+        s_thriftClub.penalty = _penalty;
+        s_thriftClub.maxParticipant = _maxParticipant;
+        s_thriftClub.name = _name;
+        s_thriftClub.description = _description;
+        s_thriftClub.nftContract = IERC721(_nftContract);
+        s_thriftClub.daoContract = IDAOContract(_daoContract);
+        s_thriftClub.t_state = OPEN;
+        // chainlinkContract = new ChainlinkContract();
 
         setPriceFeedToken(token);
     }
@@ -143,233 +160,52 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     uint256 public ThriftPursePenaltyBalance;
     mapping(address => uint256) public ThriftPursePenaltyTokenBalance;
 
-    // function joinThriftClub(
-    //     address _tokenAddress,
-    //     uint256 _tokenAmount
-    // ) public payable {
-    //     require(!isParticipant[msg.sender], "Already a participant");
-    //     require(isValidToken(_tokenAddress), "Invalid token");
-    //     uint256 total = penalty + contributionAmount + MAXIMUM_FEE_USD;
-    //     require(
-    //         msg.value == total,
-    //         "Total must be sum of penalty and contribution amount"
-    //     );
-    //     if (_tokenAddress == address(0)) {
-    //         if (
-    //             (msg.value / 200).getConversionRate(i_priceFeedNative) >
-    //             MAXIMUM_FEE_USD
-    //         ) {
-    //             ServiceFeePurse += MAXIMUM_FEE_USD.getMaxRate(
-    //                 i_priceFeedNative
-    //             );
-    //         } else {
-    //             ServiceFeePurse += msg.value / 200;
-    //         }
 
-    //         nftContract.safeTransferFrom(
-    //             address(this),
-    //             msg.sender,
-    //             participants.length
-    //         ); // Mint an NFT for the participant
-
-    //         participants.push(msg.sender);
-    //         isParticipant[msg.sender] = true;
-
-    //         daoContract.addMember(msg.sender);
-
-    //         emit ParticipantJoined(msg.sender);
-    //     } else {}
-    // }
-    // function joinThriftClub(
-    //     address _tokenAddress,
-    //     uint256 _tokenAmount
-    // ) public payable {
-    //     require(!isParticipant[msg.sender], "Already a participant");
-    //     require(isValidToken(_tokenAddress), "Invalid token");
-    //     uint256 total = penalty + contributionAmount + MAXIMUM_FEE_USD;
-    //     require(
-    //         msg.value == total,
-    //         "Total must be sum of penalty and contribution amount"
-    //     );
-    //     if (_tokenAddress == address(0)) {
-    //         // Ether payment
-    //         if (
-    //             (msg.value / 200).getConversionRate(i_priceFeedNative) >
-    //             MAXIMUM_FEE_USD
-    //         ) {
-    //             ServiceFeePurse += MAXIMUM_FEE_USD.getMaxRate(
-    //                 i_priceFeedNative
-    //             );
-    //         } else {
-    //             ServiceFeePurse += msg.value / 200;
-    //         }
-
-    //         nftContract.safeTransferFrom(
-    //             address(this),
-    //             msg.sender,
-    //             participants.length
-    //         ); // Mint an NFT for the participant
-
-    //         participants.push(msg.sender);
-    //         isParticipant[msg.sender] = true;
-
-    //         daoContract.addMember(msg.sender);
-
-    //         emit ParticipantJoined(msg.sender);
-    //     } else if (
-    //         _tokenAddress == i_USDCAddress ||
-    //         _tokenAddress == i_USDTAddress ||
-    //         _tokenAddress == i_DAIAddress ||
-    //         _tokenAddress == i_WBTCAddress
-    //     ) {
-    //         // Token payment
-    //         // Calculate and handle the fees for the specific token address
-
-    //         // Example code for USDC token
-    //         uint256 tokenFee = MAXIMUM_FEE_USD.getConversionRate(
-    //             i_priceFeedUSDC
-    //         );
-    //         ServiceFeePurseTokenBalances[_tokenAddress] += tokenFee;
-
-    //         // Transfer the tokens from the sender to the contract
-    //         IERC20(_tokenAddress).transferFrom(
-    //             msg.sender,
-    //             address(this),
-    //             _tokenAmount
-    //         );
-
-    //         nftContract.safeTransferFrom(
-    //             address(this),
-    //             msg.sender,
-    //             participants.length
-    //         ); // Mint an NFT for the participant
-
-    //         participants.push(msg.sender);
-    //         isParticipant[msg.sender] = true;
-
-    //         daoContract.addMember(msg.sender);
-
-    //         emit ParticipantJoined(msg.sender);
-    //     } else {
-    //         revert("Unsupported token");
-    //     }
-    // }
-
-    // function joinThriftClub(
-    //     address _tokenAddress,
-    //     uint256 _tokenAmount
-    // ) public payable {
-    //     require(!isParticipant[msg.sender], "Already a participant");
-    //     require(isValidToken(_tokenAddress), "Invalid token");
-    //     uint256 total = penalty + contributionAmount + MAXIMUM_FEE_USD;
-    //     require(
-    //         msg.value == total,
-    //         "Total must be sum of penalty and contribution amount"
-    //     );
-    //     if (_tokenAddress == address(0)) {
-    //         // Ether payment
-    //         if (
-    //             (msg.value / 200).getConversionRate(i_priceFeedNative) >
-    //             MAXIMUM_FEE_USD
-    //         ) {
-    //             uint256 serviceFee = MAXIMUM_FEE_USD.getMaxRate(
-    //                 i_priceFeedNative
-    //             );
-    //             ServiceFeePurse += serviceFee;
-    //             ThriftPurseBalance += msg.value - serviceFee;
-    //         } else {
-    //             uint256 serviceFee = msg.value / 200;
-    //             ServiceFeePurse += serviceFee;
-    //             ThriftPurseBalance += msg.value - serviceFee;
-    //         }
-
-    //         nftContract.safeTransferFrom(
-    //             address(this),
-    //             msg.sender,
-    //             participants.length
-    //         ); // Mint an NFT for the participant
-
-    //         participants.push(msg.sender);
-    //         isParticipant[msg.sender] = true;
-
-    //         daoContract.addMember(msg.sender);
-
-    //         emit ParticipantJoined(msg.sender);
-    //     } else if (
-    //         _tokenAddress == i_USDCAddress ||
-    //         _tokenAddress == i_USDTAddress ||
-    //         _tokenAddress == i_DAIAddress ||
-    //         _tokenAddress == i_WBTCAddress
-    //     ) {
-    //         // Token payment
-    //         // Calculate and handle the fees for the specific token address
-
-    //         // Example code for USDC token
-    //         uint256 tokenFee = MAXIMUM_FEE_USD.getConversionRate(
-    //             i_priceFeedUSDC
-    //         );
-    //         ServiceFeePurseTokenBalances[_tokenAddress] += tokenFee;
-    //         ThriftPurseTokenBalance[_tokenAddress] += _tokenAmount - tokenFee;
-
-    //         // Transfer the tokens from the sender to the contract
-    //         IERC20(_tokenAddress).transferFrom(
-    //             msg.sender,
-    //             address(this),
-    //             _tokenAmount
-    //         );
-
-    //         nftContract.safeTransferFrom(
-    //             address(this),
-    //             msg.sender,
-    //             participants.length
-    //         ); // Mint an NFT for the participant
-
-    //         participants.push(msg.sender);
-    //         isParticipant[msg.sender] = true;
-
-    //         daoContract.addMember(msg.sender);
-
-    //         emit ParticipantJoined(msg.sender);
-    //     } else {
-    //         revert("Unsupported token");
-    //     }
-    // }
-
-    function payPenaltyFee(
-        address _tokenAddress,
-        uint256 _tokenAmount
+   function payPenaltyFee(
+    address _tokenAddress,
+    uint256 _tokenAmount
     ) public payable {
+        ThriftClubData memory s_thriftClubData;
         require(!hasPaidPenalty[msg.sender], "Penalty fee already paid");
         require(isValidToken(_tokenAddress), "Invalid token");
         require(
-            _tokenAddress != address(0) || msg.value == penalty,
+            _tokenAddress != address(0) || msg.value == s_thriftClubData.penalty,
             "Incorrect penalty fee amount"
         );
 
         if (_tokenAddress == address(0)) {
             // Ether payment
-            require(msg.value == penalty, "Incorrect penalty fee amount");
+            require(msg.value == s_thriftClubData.penalty, "Incorrect penalty fee amount");
 
             // Store the penalty fee in the ThriftPursePenaltyBalance
-            ThriftPursePenaltyBalance += penalty;
+            ThriftPursePenaltyBalance += s_thriftClubData.penalty;
+
+            // Transfer the penalty fee to the contract
+            payable(address(this)).transfer(msg.value);
         } else {
             // Token payment
             require(
-                _tokenAmount == penalty,
+                _tokenAmount == s_thriftClubData.penalty,
                 "Incorrect token amount for penalty fee"
             );
 
             // Store the penalty fee in the ThriftPursePenaltyTokenBalance
-            ThriftPursePenaltyTokenBalance[_tokenAddress] += penalty;
+            ThriftPursePenaltyTokenBalance[_tokenAddress] += s_thriftClubData.penalty;
+
+            // Transfer the penalty fee to the contract
+            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _tokenAmount);
         }
 
         hasPaidPenalty[msg.sender] = true;
     }
 
+
     function joinThriftClub(
         address _tokenAddress,
         uint256 _tokenAmount
     ) public {
+        ThriftClubData memory s_thriftClubData;
+
         require(hasPaidPenalty[msg.sender], "Penalty fee not paid");
         require(!isParticipant[msg.sender], "Already a participant");
         require(isValidToken(_tokenAddress), "Invalid token");
@@ -392,6 +228,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
             }
             ServiceFeePurse += serviceFee;
             ThriftPurseBalance += contributionAmount;
+            payable(address(this)).transfer(msg.value);
         } else {
             // Token payment
             require(msg.value == 0, "Invalid Ether value");
@@ -409,14 +246,16 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
             }
             ServiceFeePurseTokenBalances[_tokenAddress] += serviceFee;
             ThriftPurseTokenBalance[_tokenAddress] += contributionAmount;
+            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _tokenAmount);
         }
 
         // Mint an NFT for the participant
-        nftContract.safeTransferFrom(
-            address(this),
-            msg.sender,
-            participants.length
-        );
+        // nftContract.safeTransferFrom(
+        //     address(this),
+        //     msg.sender,
+        //     participants.length
+        // );
+        nftContract.mint(msg.sender);
 
         participants.push(msg.sender);
         isParticipant[msg.sender] = true;
@@ -424,6 +263,9 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         daoContract.addMember(msg.sender);
 
         emit ParticipantJoined(msg.sender);
+        if(s_thriftClubData.maxParticipant == participants.length){
+            s_thriftClubData.t_state == PAYMENT_IN_PROGRESS
+        }
     }
 
     function startCycle() external {
@@ -504,4 +346,8 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     ) internal override {
         s_randomWords = randomWords;
     }
+
+    function getThriftClubDetails() public view returns (ThriftClub memory) {
+    return s_thriftClub;
+}
 }

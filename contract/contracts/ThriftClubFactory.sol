@@ -75,7 +75,8 @@ contract ThriftClubFactory is KeeperCompatibleInterface, VRFConsumerBaseV2{
 
         createNewSubscription(address(newThriftClub))
 
-        nftContract.mint(address(newThriftClub));
+        // nftContract.mint(address(newThriftClub));
+        // nftContract.transferOwnership(address(newThriftClub)); // Transfer ownership to the new ThriftClub contract
         clubToNFT[address(newThriftClub)] = address(nftContract);
         clubtoDAO[address(newThriftClub)] = address(daoContract);
 
