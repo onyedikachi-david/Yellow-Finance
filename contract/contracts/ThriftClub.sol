@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 // Imports token price conversioner library
 import "./PriceConverter.sol";
 import "./DAOContract.sol";
@@ -12,12 +16,12 @@ import "./DAOContract.sol";
 import "./IDAOContract.sol";
 
 contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
-     enum TANDA_STATE {
+    enum TANDA_STATE {
         OPEN,
         CLOSED,
         PAYMENT_IN_PROGRESS,
         COMPLETED
-    };
+    }
     struct ThriftClubData {
         address token;
         uint256 cycleDuration;
@@ -28,10 +32,11 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         string description;
         IERC721 nftContract;
         IDAOContract daoContract;
-        TANDA_STATE t_state
-    };
+        TANDA_STATE t_state;
+        lastUpdateTimestamp;
+    }
 
-    ThriftClub memory s_thriftClub;
+    ThriftClubData s_thriftClub;
 
     VRFCoordinatorV2Interface COORDINATOR;
     LinkTokenInterface LINKTOKEN;
@@ -82,17 +87,15 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     // constants
     uint256 public constant MAXIMUM_FEE_USD = 50 * 1e18;
 
-    address public token;
-    uint256 public cycleDuration;
-    uint256 public contributionAmount;
-    uint256 public penalty;
-    uint256 public maxParticipant;
-    string public name;
-    string public description;
+    // address public token;
+    // uint256 public cycleDuration;
+    // uint256 public contributionAmount;
+    // uint256 public penalty;
+    // uint256 public maxParticipant;
+    // string public name;
+    // string public description;
 
     address public i_priceFeedToken;
-
-   
 
     mapping(address => bool) public isParticipant;
     address[] public participants;
@@ -107,7 +110,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     IDAOContract public daoContract;
 
     // Chainlink contract
-    ChainlinkContract public chainlinkContract;
+    // ChainlinkContract public chainlinkContract;
 
     event ParticipantJoined(address indexed participant);
     event CycleStarted(address indexed winner);
@@ -146,10 +149,11 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         s_thriftClub.description = _description;
         s_thriftClub.nftContract = IERC721(_nftContract);
         s_thriftClub.daoContract = IDAOContract(_daoContract);
-        s_thriftClub.t_state = OPEN;
+        s_thriftClub.t_state = TANDA_STATE.OPEN;
+        s_thriftClub.lastUpdateTimestamp = block.timestamp;
         // chainlinkContract = new ChainlinkContract();
 
-        setPriceFeedToken(token);
+        setPriceFeedToken(_token);
     }
 
     // Fee collection
@@ -160,22 +164,25 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     uint256 public ThriftPursePenaltyBalance;
     mapping(address => uint256) public ThriftPursePenaltyTokenBalance;
 
-
-   function payPenaltyFee(
-    address _tokenAddress,
-    uint256 _tokenAmount
+    function payPenaltyFee(
+        address _tokenAddress,
+        uint256 _tokenAmount
     ) public payable {
         ThriftClubData memory s_thriftClubData;
         require(!hasPaidPenalty[msg.sender], "Penalty fee already paid");
         require(isValidToken(_tokenAddress), "Invalid token");
         require(
-            _tokenAddress != address(0) || msg.value == s_thriftClubData.penalty,
+            _tokenAddress != address(0) ||
+                msg.value == s_thriftClubData.penalty,
             "Incorrect penalty fee amount"
         );
 
         if (_tokenAddress == address(0)) {
             // Ether payment
-            require(msg.value == s_thriftClubData.penalty, "Incorrect penalty fee amount");
+            require(
+                msg.value == s_thriftClubData.penalty,
+                "Incorrect penalty fee amount"
+            );
 
             // Store the penalty fee in the ThriftPursePenaltyBalance
             ThriftPursePenaltyBalance += s_thriftClubData.penalty;
@@ -190,15 +197,19 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
             );
 
             // Store the penalty fee in the ThriftPursePenaltyTokenBalance
-            ThriftPursePenaltyTokenBalance[_tokenAddress] += s_thriftClubData.penalty;
+            ThriftPursePenaltyTokenBalance[_tokenAddress] += s_thriftClubData
+                .penalty;
 
             // Transfer the penalty fee to the contract
-            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _tokenAmount);
+            IERC20(_tokenAddress).transferFrom(
+                msg.sender,
+                address(this),
+                _tokenAmount
+            );
         }
 
         hasPaidPenalty[msg.sender] = true;
     }
-
 
     function joinThriftClub(
         address _tokenAddress,
@@ -213,7 +224,8 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         if (_tokenAddress == address(0)) {
             // Ether payment
             require(
-                msg.value == contributionAmount + MAXIMUM_FEE_USD,
+                msg.value ==
+                    ThriftClubData.contributionAmount + MAXIMUM_FEE_USD,
                 "Incorrect amount"
             );
 
@@ -227,13 +239,13 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
                 serviceFee = msg.value / 200;
             }
             ServiceFeePurse += serviceFee;
-            ThriftPurseBalance += contributionAmount;
+            ThriftPurseBalance += ThriftClubData.contributionAmount;
             payable(address(this)).transfer(msg.value);
         } else {
             // Token payment
             require(msg.value == 0, "Invalid Ether value");
             require(_tokenAmount > 0, "Invalid token amount");
-            require(_tokenAddress == token, "Invalid token");
+            require(_tokenAddress == ThriftClubData.token, "Invalid token");
 
             // Calculate and handle fee calculations for token payment
             uint256 serviceFee;
@@ -245,8 +257,13 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
                 serviceFee = _tokenAmount / 200;
             }
             ServiceFeePurseTokenBalances[_tokenAddress] += serviceFee;
-            ThriftPurseTokenBalance[_tokenAddress] += contributionAmount;
-            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _tokenAmount);
+            ThriftPurseTokenBalance[_tokenAddress] += ThriftClubData
+                .contributionAmount;
+            IERC20(_tokenAddress).transferFrom(
+                msg.sender,
+                address(this),
+                _tokenAmount
+            );
         }
 
         // Mint an NFT for the participant
@@ -263,20 +280,23 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         daoContract.addMember(msg.sender);
 
         emit ParticipantJoined(msg.sender);
-        if(s_thriftClubData.maxParticipant == participants.length){
-            s_thriftClubData.t_state == PAYMENT_IN_PROGRESS
+        // Change state when the maxParticipant is reached
+        if (s_thriftClubData.maxParticipant == participants.length) {
+            s_thriftClubData.t_state == TANDA_STATE.PAYMENT_IN_PROGRESS;
         }
     }
+
+    // Have a new cycle started function
 
     function startCycle() external {
         require(participants.length > 0, "No participants");
         require(
-            participants.length == maxParticipant,
+            // participants.length == maxParticipant,
             "Maximum participants not reached"
         );
 
-        address winner = chainlinkContract.determinePotWinner(participants);
-        emit CycleStarted(winner);
+        // address winner = chainlinkContract.determinePotWinner(participants);
+        // emit CycleStarted(winner);
 
         // Distribute the pot to the winner
     }
@@ -301,17 +321,17 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
 
     // Check if the given token is a valid token for contribution
     function isValidToken(address _token) internal pure returns (bool) {
-        return (_token == address(token)); // Replace with the address of the allowed tokens
+        return (_token == address(ThriftClubData.token)); // Replace with the address of the allowed tokens
     }
 
     function setPriceFeedToken(address _token) internal {
-        if (token == i_USDCAddress) {
+        if (_token == i_USDCAddress) {
             i_priceFeedToken = address(USDCAddress);
-        } else if (token == i_USDTAddress) {
+        } else if (_token == i_USDTAddress) {
             i_priceFeedToken = address(USDTAddress);
-        } else if (token == i_DAIAddress) {
+        } else if (_token == i_DAIAddress) {
             i_priceFeedToken = address(DAIAddress);
-        } else if (token == i_WBTCAddress) {
+        } else if (_token == i_WBTCAddress) {
             i_priceFeedToken = address(WBTCAddress);
         } else {
             // Handle the case where the token address is not valid
@@ -329,7 +349,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         return this.onERC721Received.selector;
     }
 
-    function requestRandomWords() external onlyOwner {
+    function requestRandomWords() external {
         // Will revert if subscription is not set and funded.
         s_requestId = COORDINATOR.requestRandomWords(
             keyHash,
@@ -340,14 +360,35 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         );
     }
 
+    function checkUpkeep(
+        bytes calldata checkData
+    ) external override returns (bool upkeepNeeded, bytes memory performData) {
+        TANDA_STATE currState = s_thriftClubData.t_state;
+        uint256 lastUpdateTimestamp = s_thriftClubData.lastUpdateTimestamp;
+        uint256 cycleDuration = s_thriftClubData.cycleDuration;
+
+        if (
+            currState == TANDA_STATE.PAYMENT_IN_PROGRESS &&
+            block.timestamp > lastUpdateTimestamp.add(cycleDuration)
+        ) {
+            upkeepNeeded = true;
+        } else {
+            upkeepNeeded = false;
+        }
+
+        performData = checkData;
+    }
+
     function fulfillRandomWords(
         uint256 /* requestId */,
         uint256[] memory randomWords
     ) internal override {
         s_randomWords = randomWords;
+        // do other stuff, like call winner function to send to pot to the winner
+        // The winner function change the timestamp and the tanda enum state.
     }
 
     function getThriftClubDetails() public view returns (ThriftClub memory) {
-    return s_thriftClub;
-}
+        return s_thriftClub;
+    }
 }
