@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@chainlink/contracts/src/v0.8/interfaces/automation/KeeperCompatibleInterface.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/interfaces/LinkTokenInterface.sol";
+// import "@chainlink/contracts/src/v0.8/interfaces/automation/KeeperCompatibleInterface.sol";
+import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
@@ -11,7 +11,7 @@ import "./NFTContract.sol";
 import "./DAOContract.sol";
 
 // Factory contract
-contract ThriftClubFactory is KeeperCompatibleInterface, VRFConsumerBaseV2{
+contract ThriftClubFactory is AutomationCompatible, VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface public COORDINATOR;
     LinkTokenInterface public LINKTOKEN;
 
@@ -22,6 +22,8 @@ contract ThriftClubFactory is KeeperCompatibleInterface, VRFConsumerBaseV2{
     // Sepolia LINK token contract. For other networks, see
     // https://docs.chain.link/docs/vrf-contracts/#configurations
     address link_token_contract = 0x779877A7B0D9E8603169DdbD7836e478b4624789;
+
+    uint64 public s_subscriptionId;
 
     address[] public thriftClubs;
     mapping(address => address) public clubToNFT;
@@ -39,7 +41,7 @@ contract ThriftClubFactory is KeeperCompatibleInterface, VRFConsumerBaseV2{
         address indexed creator
     );
 
-     constructor() VRFConsumerBaseV2(vrfCoordinator) {
+    constructor() VRFConsumerBaseV2(vrfCoordinator) {
         COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         LINKTOKEN = LinkTokenInterface(link_token_contract);
         s_owner = msg.sender;
@@ -73,7 +75,8 @@ contract ThriftClubFactory is KeeperCompatibleInterface, VRFConsumerBaseV2{
             address(daoContract)
         );
 
-        createNewSubscription(address(newThriftClub))
+        createNewSubscription(address(newThriftClub));
+        newThriftClub.setSubscriptionId(s_subscriptionId);
 
         // nftContract.mint(address(newThriftClub));
         // nftContract.transferOwnership(address(newThriftClub)); // Transfer ownership to the new ThriftClub contract
@@ -169,7 +172,9 @@ contract ThriftClubFactory is KeeperCompatibleInterface, VRFConsumerBaseV2{
     }
 
     // Create a new subscription when the contract is initially deployed.
-    function createNewSubscription(address _consumerAddress) private onlyOwner returns (uint256){
+    function createNewSubscription(
+        address _consumerAddress
+    ) private onlyOwner returns (uint256) {
         s_subscriptionId = COORDINATOR.createSubscription();
         // Add this contract as a consumer of its own subscription.
         COORDINATOR.addConsumer(s_subscriptionId, address(_consumerAddress));

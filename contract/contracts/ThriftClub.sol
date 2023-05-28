@@ -33,10 +33,12 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         IERC721 nftContract;
         IDAOContract daoContract;
         TANDA_STATE t_state;
-        lastUpdateTimestamp;
+        uint256 lastUpdateTimestamp;
     }
 
     ThriftClubData s_thriftClub;
+
+    uint256 paidParticipants = 0;
 
     VRFCoordinatorV2Interface COORDINATOR;
     LinkTokenInterface LINKTOKEN;
@@ -69,7 +71,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     // Storage parameters
     uint256[] public s_randomWords;
     uint256 public s_requestId;
-    uint64 public s_subscriptionId;
+    uint64 private s_subscriptionId;
     address s_owner;
     // ./PriceConverter gets token price conversions for detrmining max transaction fee
     using PriceConverter for uint256;
@@ -349,7 +351,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         return this.onERC721Received.selector;
     }
 
-    function requestRandomWords() external {
+    function requestRandomWords() internal {
         // Will revert if subscription is not set and funded.
         s_requestId = COORDINATOR.requestRandomWords(
             keyHash,
@@ -363,9 +365,10 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     function checkUpkeep(
         bytes calldata checkData
     ) external override returns (bool upkeepNeeded, bytes memory performData) {
-        TANDA_STATE currState = s_thriftClubData.t_state;
-        uint256 lastUpdateTimestamp = s_thriftClubData.lastUpdateTimestamp;
-        uint256 cycleDuration = s_thriftClubData.cycleDuration;
+        // ThriftClubData s_thriftClubData
+        TANDA_STATE currState = s_thriftClub.t_state;
+        uint256 lastUpdateTimestamp = s_thriftClub.lastUpdateTimestamp;
+        uint256 cycleDuration = s_thriftClub.cycleDuration;
 
         if (
             currState == TANDA_STATE.PAYMENT_IN_PROGRESS &&
@@ -379,16 +382,81 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         performData = checkData;
     }
 
+    function performUpkeep(bytes calldata performData) external override {
+        TANDA_STATE currState = s_thriftClub.t_state;
+        uint256 lastUpdateTimestamp = s_thriftClub.lastUpdateTimestamp;
+        uint256 cycleDuration = s_thriftClub.cycleDuration;
+
+        if (
+            currState == TANDA_STATE.PAYMENT_IN_PROGRESS &&
+            block.timestamp > lastUpdateTimestamp.add(cycleDuration)
+        ) {
+            // Perform the necessary actions for when the payment period is over
+            // For example, distribute rewards or proceed to the next cycle
+            requestRandomWords();
+        }
+
+        // Perform any other necessary upkeep tasks
+
+        performData;
+    }
+
+    // function fulfillRandomWords(
+    //     uint256 /* requestId */,
+    //     uint256[] memory randomWords
+    // ) internal override {
+    //     s_randomWords = randomWords;
+    //     // do other stuff, like call winner function to send to pot to the winner
+    //     // The winner function change the timestamp and the tanda enum state.
+    // }
+
     function fulfillRandomWords(
         uint256 /* requestId */,
         uint256[] memory randomWords
     ) internal override {
         s_randomWords = randomWords;
         // do other stuff, like call winner function to send to pot to the winner
-        // The winner function change the timestamp and the tanda enum state.
+        uint256 winnerIndex = s_randomWords[0] % participants.length;
+        address winner = participants[winnerIndex];
+
+        // Check ThriftPurseBalance and ThriftPurseTokenBalance before transferring the pot balance
+        require(
+            ThriftPurseBalance > 0 || ThriftPurseTokenBalance[token] > 0,
+            "No balance in the ThriftPurse"
+        );
+
+        if (ThriftPurseBalance > 0) {
+            payable(winner).transfer(ThriftPurseBalance);
+            ThriftPurseBalance = 0;
+        } else if (ThriftPurseTokenBalance[token] > 0) {
+            // Transfer tokens using the appropriate token contract
+            require(
+                tokenContract.transfer(winner, ThriftPurseTokenBalance[token]),
+                "Token transfer failed"
+            );
+            ThriftPurseTokenBalance[token] = 0;
+        }
+
+        // Increment paidParticipants count
+        paidParticipants++;
+
+        // Update the state based on the number of paid participants
+        if (paidParticipants == maxParticipant) {
+            tandaState = TANDA_STATE.CLOSED;
+        } else {
+            tandaState = TANDA_STATE.OPEN;
+        }
     }
 
     function getThriftClubDetails() public view returns (ThriftClub memory) {
         return s_thriftClub;
+    }
+
+    function setSubscriptionId(uint256 subscriptionId) internal {
+        s_subscriptionId = subscriptionId;
+    }
+
+    function getSubscriptionId() public view returns (uint256) {
+        return s_subscriptionId;
     }
 }
