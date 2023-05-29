@@ -10,6 +10,23 @@ import "./ThriftClub.sol";
 import "./NFTContract.sol";
 import "./DAOContract.sol";
 
+struct RegistrationParams {
+    string name;
+    bytes encryptedEmail;
+    address upkeepContract;
+    uint32 gasLimit;
+    address adminAddress;
+    bytes checkData;
+    bytes offchainConfig;
+    uint96 amount;
+}
+
+interface KeeperRegistrarInterface {
+    function registerUpkeep(
+        RegistrationParams calldata requestParams
+    ) external returns (uint256);
+}
+
 // Factory contract
 contract ThriftClubFactory is AutomationCompatible, VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface public COORDINATOR;
@@ -41,10 +58,15 @@ contract ThriftClubFactory is AutomationCompatible, VRFConsumerBaseV2 {
         address indexed creator
     );
 
-    constructor() VRFConsumerBaseV2(vrfCoordinator) {
+    constructor(
+        LinkTokenInterface link,
+        KeeperRegistrarInterface registrar
+    ) VRFConsumerBaseV2(vrfCoordinator) {
         COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         LINKTOKEN = LinkTokenInterface(link_token_contract);
         s_owner = msg.sender;
+        i_link = link;
+        i_registrar = registrar;
     }
 
     function createThriftClub(
@@ -78,6 +100,18 @@ contract ThriftClubFactory is AutomationCompatible, VRFConsumerBaseV2 {
         createNewSubscription(address(newThriftClub));
         newThriftClub.setSubscriptionId(s_subscriptionId);
 
+        RegistrationParams memory params;
+        params.name = _name;
+        params.encryptedEmail = bytes("");
+        params.upkeepContract = address(newThriftClub);
+        params.gasLimit = 500000;
+        params.adminAddress = address(this); // Factory contract address
+        params.checkData = bytes(""); // Optional check data
+        params.offchainConfig = bytes(""); // Optional off-chain config
+        params.amount = 100000000000000000; // Amount of LINK tokens to transfer
+
+        registerAndPredictID(params);
+
         // nftContract.mint(address(newThriftClub));
         // nftContract.transferOwnership(address(newThriftClub)); // Transfer ownership to the new ThriftClub contract
         clubToNFT[address(newThriftClub)] = address(nftContract);
@@ -85,6 +119,18 @@ contract ThriftClubFactory is AutomationCompatible, VRFConsumerBaseV2 {
 
         thriftClubs.push(address(newThriftClub));
         emit ThriftClubCreated(address(newThriftClub), msg.sender);
+    }
+
+    function registerAndPredictID(RegistrationParams memory params) public {
+        // LINK must be approved for transfer - this can be done every time or once
+        // with an infinite approval
+        i_link.approve(address(i_registrar), params.amount);
+        uint256 upkeepID = i_registrar.registerUpkeep(params);
+        if (upkeepID != 0) {
+            // DEV - Use the upkeepID however you see fit
+        } else {
+            revert("auto-approve disabled");
+        }
     }
 
     function getThriftClubs() external view returns (address[] memory) {

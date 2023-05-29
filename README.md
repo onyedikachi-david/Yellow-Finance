@@ -2,6 +2,19 @@
 The Ideal Thrift
 🚧👷 Under Construction👷🚧
 
+### Chainlink Price feed Address (Mumbai)
+MATIC/USD 0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada
+USDC/USD 0x572dDec9087154dC5dfBB1546Bb62713147e0Ab0
+USDT/USD 0x92C09849638959196E976289418e5973CC96d645
+DAI/USD 0x0FCAa9c899EC5A91eBc3D5Dd869De833b06fB046
+BTC/USD 0x007A22900a3B98143368Bd5906f8E17e9867581b
+
+### Mumbai contract Address
+USDCAddress 0x0FA8781a83E46826621b3BC094Ea2A0212e71B23
+USDTAddress 0xA02f6adc7926efeBBd59Fd43A84f4E0c0c91e832
+DAIAddress 0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F
+WBTCAddress 0x0d787a4a1548f673ed375445535a6c7A1EE56180
+
 # DAO-based Thrift DApp
 
 This markdown document describes the features of a DAO-based thrift decentralized application (DApp) implemented as a smart contract in Solidity.
