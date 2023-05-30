@@ -67,7 +67,6 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
     mapping(uint64 => address) public s_subscriptionIdToThriftContract;
     mapping(address => address) public clubToNFT;
     mapping(address => address) public clubtoDAO;
-    mapping(uint256 => address) public s_upkeepIdToThriftContract;
 
     address public s_keeperRegistryAddress; // the address of the keeper registry
 
@@ -85,10 +84,6 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
     event ThriftClubCreated(
         address indexed thriftClub,
         address indexed creator
-    );
-    event UpkeepIDCreated(
-        address indexed upkeepContract,
-        uint256 indexed upkeepID
     );
 
     constructor(
@@ -117,7 +112,7 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
 
         NFTContract nftContract = new NFTContract(
             _name,
-            substring(_name, 0, 3),
+            "DTH",
             _maxParticipant
         );
         ThriftClub newThriftClub = new ThriftClub(
@@ -132,7 +127,7 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
             address(daoContract)
         );
 
-        // createNewSubscription(address(newThriftClub));
+        createNewSubscription(address(newThriftClub));
         // newThriftClub.setSubscriptionId(s_subscriptionId);
 
         // RegistrationParams memory params;
@@ -180,10 +175,6 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
         uint256 upkeepID = i_registrar.registerUpkeep(params);
         if (upkeepID != 0) {
             // DEV - Use the upkeepID however you see fit
-            s_upkeepIdToThriftContract[upkeepID] = address(
-                params.upkeepContract
-            );
-            emit UpkeepIDCreated(address(params.upkeepContract), upkeepID);
         } else {
             revert("auto-approve disabled");
         }
@@ -212,37 +203,6 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
             "NFT not found for the club"
         );
         return clubtoDAO[_thriftClub];
-    }
-
-    function substring(
-        string memory str,
-        uint256 startIndex,
-        uint256 endIndex
-    ) private pure returns (string memory) {
-        bytes memory strBytes = bytes(str);
-        require(
-            startIndex >= 0 && startIndex < strBytes.length,
-            "Invalid start index"
-        );
-        require(
-            endIndex >= startIndex && endIndex < strBytes.length,
-            "Invalid end index"
-        );
-
-        bytes memory result = new bytes(endIndex - startIndex + 1);
-        for (uint256 i = startIndex; i <= endIndex; i++) {
-            result[i - startIndex] = strBytes[i];
-        }
-        return string(result);
-    }
-
-    /**
-     * @notice Sets the LINK token address.
-     */
-    function setLinkTokenAddress(address linkTokenAddress) public {
-        require(linkTokenAddress != address(0));
-        emit LinkTokenAddressUpdated(address(LINKTOKEN), linkTokenAddress);
-        LINKTOKEN = LinkTokenInterface(linkTokenAddress);
     }
 
     /**
@@ -280,37 +240,5 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
         // Add this contract as a consumer of its own subscription.
         COORDINATOR.addConsumer(s_subscriptionId, address(_consumerAddress));
         return s_subscriptionId;
-    }
-
-    // Assumes this contract owns link.
-    // 1000000000000000000 = 1 LINK
-    function topUpSubscription(uint256 amount) public {
-        LINKTOKEN.transferAndCall(
-            address(COORDINATOR),
-            amount,
-            abi.encode(s_subscriptionId)
-        );
-    }
-
-    function addConsumer(address consumerAddress) public {
-        // Add a consumer contract to the subscription.
-        COORDINATOR.addConsumer(s_subscriptionId, consumerAddress);
-    }
-
-    function removeConsumer(address consumerAddress) public {
-        // Remove a consumer contract from the subscription.
-        COORDINATOR.removeConsumer(s_subscriptionId, consumerAddress);
-    }
-
-    function cancelSubscription(address receivingWallet) public {
-        // Cancel the subscription and send the remaining LINK to a wallet address.
-        COORDINATOR.cancelSubscription(s_subscriptionId, receivingWallet);
-        s_subscriptionId = 0;
-    }
-
-    // Transfer this contract's funds to an address.
-    // 1000000000000000000 = 1 LINK
-    function withdraw(uint256 amount, address to) public {
-        LINKTOKEN.transfer(to, amount);
     }
 }
