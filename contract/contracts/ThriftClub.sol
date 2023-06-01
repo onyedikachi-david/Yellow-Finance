@@ -48,11 +48,11 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     // CHANGE THIS TO POLYGON MUMBAI
     // Sepolia coordinator. For other networks,
     // see https://docs.chain.link/docs/vrf-contracts/#configurations
-    address vrfCoordinator = 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625;
+    address vrfCoordinator = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
 
     // Sepolia LINK token contract. For other networks, see
     // https://docs.chain.link/docs/vrf-contracts/#configurations
-    address link_token_contract = 0x779877A7B0D9E8603169DdbD7836e478b4624789;
+    address link_token_contract = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB;
 
     // The gas lane to use, which specifies the maximum gas price to bump to.
     // For a list of available gas lanes on each network,
@@ -120,6 +120,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
 
     event ParticipantJoined(address indexed participant);
     event CycleStarted(address indexed winner);
+    event AddressPaid(address recipient, uint256 amount);
 
     constructor(
         address _token,
@@ -446,6 +447,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
             if (!success) {
                 revert __TransferFailed();
             }
+            emit AddressPaid(winner, ThriftPurseBalance);
             ThriftPurseBalance = 0;
         } else if (ThriftPurseTokenBalance[s_thriftClub.token] > 0) {
             // Transfer tokens using the appropriate token contract
@@ -463,6 +465,10 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
             if (!success) {
                 revert __TransferFailed();
             }
+            emit AddressPaid(
+                winner,
+                ThriftPurseTokenBalance[s_thriftClub.token]
+            );
             ThriftPurseTokenBalance[s_thriftClub.token] = 0;
         }
 

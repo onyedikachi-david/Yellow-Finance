@@ -1,4 +1,3 @@
-// // SPDX-License-Identifier: MIT
 // pragma solidity ^0.8.9;
 
 // contract ChainlinkContract {
@@ -19,25 +18,38 @@ contract ChainlinkContract is VRFConsumerBase {
     uint256 private randomResult;
     bytes32 private requestId;
     uint256 private seed;
-    
+
     mapping(bytes32 => address) private requestIdToSender;
 
     // Chainlink VRF variables
     bytes32 private keyHash;
     uint256 private fee;
 
-    constructor(address _vrfCoordinator, address _linkToken, bytes32 _keyHash, uint256 _fee) 
-        VRFConsumerBase(_vrfCoordinator, _linkToken)
-    {
+    constructor(
+        address _vrfCoordinator,
+        address _linkToken,
+        bytes32 _keyHash,
+        uint256 _fee
+    ) VRFConsumerBase(_vrfCoordinator, _linkToken) {
         keyHash = _keyHash;
         fee = _fee;
     }
 
-    function determinePotWinner(address[] memory _participants) external returns (address) {
+    function determinePotWinner(
+        address[] memory _participants
+    ) external returns (address) {
         require(_participants.length > 0, "No participants");
 
         participants = _participants;
-        seed = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, participants.length)));
+        seed = uint256(
+            keccak256(
+                abi.encodePacked(
+                    block.timestamp,
+                    msg.sender,
+                    participants.length
+                )
+            )
+        );
 
         requestId = requestRandomness(keyHash, fee, seed);
 
@@ -45,7 +57,10 @@ contract ChainlinkContract is VRFConsumerBase {
         return address(0);
     }
 
-    function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
+    function fulfillRandomness(
+        bytes32 _requestId,
+        uint256 _randomness
+    ) internal override {
         require(_requestId == requestId, "Invalid request ID");
 
         randomResult = _randomness % participants.length;

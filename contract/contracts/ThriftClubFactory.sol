@@ -64,7 +64,7 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
     uint64 public s_subscriptionId;
 
     address[] public thriftClubs;
-    mapping(uint64 => address) public s_subscriptionIdToThriftContract;
+    mapping(address => uint64) public ThriftContractTos_subscriptionId;
     mapping(address => address) public clubToNFT;
     mapping(address => address) public clubtoDAO;
     mapping(uint256 => address) public s_upkeepIdToThriftContract;
@@ -89,6 +89,10 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
     event UpkeepIDCreated(
         address indexed upkeepContract,
         uint256 indexed upkeepID
+    );
+    event CreatedNewSubscription(
+        address indexed thriftContract,
+        uint64 s_subscriptionId
     );
 
     constructor(
@@ -274,11 +278,12 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
         address _consumerAddress
     ) internal returns (uint256) {
         s_subscriptionId = COORDINATOR.createSubscription();
-        s_subscriptionIdToThriftContract[s_subscriptionId] = address(
-            _consumerAddress
-        );
+        ThriftContractTos_subscriptionId[
+            address(_consumerAddress)
+        ] = s_subscriptionId;
         // Add this contract as a consumer of its own subscription.
         COORDINATOR.addConsumer(s_subscriptionId, address(_consumerAddress));
+        emit CreatedNewSubscription(_consumerAddress, s_subscriptionId);
         return s_subscriptionId;
     }
 

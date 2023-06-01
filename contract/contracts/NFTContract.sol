@@ -17,16 +17,12 @@ contract NFTContract is ERC721 {
         maxSupply = _maxSupply;
     }
 
-    function mint(address _account) external {
+    function mint(address _account) public {
         require(!isMinted[_account], "Already minted NFT for the account");
         require(tokenIdCounter < maxSupply, "Maximum supply reached");
 
         _safeMint(_account, tokenIdCounter);
         tokenIdCounter++;
         isMinted[_account] = true;
-    }
-
-    function transferOwnership(address _newOwner) external {
-        _transferOwnership(_newOwner);
     }
 }
