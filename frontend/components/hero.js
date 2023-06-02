@@ -23,7 +23,7 @@ const Hero = () => {
           </a>
         </div>
         <div className="mt-8 md:mt-0 md:w-1/2">
-          <img class=" h-50" src="hero.svg" alt="Hero Image" />
+          <img className="" src="Illustration3.png" alt="Hero Image" />
         </div>
       </div>
     </section>
