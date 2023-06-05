@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -15,12 +16,12 @@ const Hero = () => {
             Secured by Chainlink VRF, Price Feed and Automation
           </i>
 
-          <a
+          <Link
             href="#"
             className=" mt-10 rounded bg-blue-500 px-6 py-6 text-white hover:bg-blue-600"
           >
             Explore
-          </a>
+          </Link>
         </div>
         <div className="mt-8 md:mt-0 md:w-1/2">
           <img className="" src="Illustration3.png" alt="Hero Image" />
