@@ -50,10 +50,9 @@ function Create() {
       <div className="flex h-screen items-center justify-center bg-slate-400 text-black">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="rounded-lg bg-white p-8 shadow-lg"
+          className="w-2/3 rounded-lg bg-white p-8 shadow-lg"
         >
           <h2 className="mb-6 text-2xl font-bold">Create Thrift Club</h2>
-
           <div className="mb-4">
             <label
               className="mb-2 block text-sm font-bold text-gray-700"
