@@ -16,6 +16,8 @@ const tokenOptions = [
 ];
 
 function Create() {
+  const [transactionDetails, setTransactionDetails] = React.useState(null);
+
   const {
     register,
     handleSubmit,
@@ -34,9 +36,6 @@ function Create() {
   );
 
   const onSubmit = async (formData) => {
-    // Call the Solidity function here with the form data
-    // For example:
-    // createThriftClub(data.token, data.cycleDuration, data.contributionAmount, data.penalty, data.maxParticipant, data.name, data.description);
     console.log(formData);
     try {
       const data = await createThriftClub({
@@ -51,11 +50,15 @@ function Create() {
         ],
       });
       console.info("contract call success", data);
+      const creator = data.receipt.events[0].args.creator;
+      const thriftClub = data.receipt.events[0].args.thriftClub;
+      console.log(creator);
+      console.log(thriftClub);
+      setTransactionDetails({ creator, thriftClub });
     } catch (err) {
       console.error("contract call failure", err);
     }
   };
-
   const isHalfOfContributionAmount = (value) => {
     const contributionAmount = watch("contributionAmount");
     return Number(value) === Number(contributionAmount) / 2;
@@ -64,7 +67,35 @@ function Create() {
   return (
     <>
       <Nav />
+
       <div className="flex h-screen items-center justify-center bg-slate-400 text-black">
+        {isLoading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="rounded-lg bg-white p-4">
+              <div className="mb-2 flex items-center">
+                <svg
+                  className="mr-2 h-5 w-5 animate-spin text-gray-500"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-1.647z"
+                  ></path>
+                </svg>
+                <span className="text-gray-700">Loading...</span>
+              </div>
+            </div>
+          </div>
+        )}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="w-2/3 rounded-lg bg-white p-8 shadow-lg"
@@ -267,11 +298,36 @@ function Create() {
                 formData.description,
               ]);
             }}
+            onSuccess={(result) => alert("Success!")}
+            // onSubmit={() => console.log("Transaction submitted")}
+            // onError={(error) => alert("Something went wrong!")}
+            // isDisabled
           >
             createThriftClub
           </Web3Button> */}
         </form>
       </div>
+      {/* Alert */}
+      {/* Alert */}
+      {transactionDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="rounded-lg bg-white p-4">
+            <div className="mb-4 text-gray-700">Status: Success</div>
+            <div className="mb-2 text-gray-700">
+              Creator: {transactionDetails.creator}
+            </div>
+            <div className="mb-4 text-gray-700">
+              ThriftClub: {transactionDetails.thriftClub}
+            </div>
+            <button
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white"
+              onClick={() => setTransactionDetails(null)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
