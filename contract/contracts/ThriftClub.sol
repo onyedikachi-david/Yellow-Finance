@@ -39,7 +39,7 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         uint256 lastUpdateTimestamp;
     }
 
-    ThriftClubData s_thriftClub;
+    ThriftClubData public s_thriftClub;
 
     uint256 paidParticipants = 0;
 

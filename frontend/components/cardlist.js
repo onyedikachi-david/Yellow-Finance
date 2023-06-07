@@ -1,6 +1,83 @@
 import React from "react";
+import { useEffect, useState, useRef } from "react";
+import { useContract, useContractRead } from "@thirdweb-dev/react";
+import { ethers } from "ethers";
+import ThriftClub from "@/ThriftClub.sol/ThriftClub.json";
 
-function CardList() {
+function CardList({ props }) {
+  const [thriftContracts, setThriftContracts] = useState([]);
+
+  const [thriftDataList, setThriftDataList] = useState([]);
+  const { contract } = useContract(
+    "0x25BeBb3a758262b5A640f2f9011b420419eacE69"
+  );
+  const { data, isLoading } = useContractRead(contract, "getThriftClubs", []);
+
+  useEffect(() => {
+    if (!isLoading && data.length > 0) {
+      setThriftContracts(data);
+    }
+  }, [isLoading, data]);
+
+  useEffect(() => {
+    if (thriftContracts.length > 0) {
+      getThriftDetails();
+    }
+  }, [thriftContracts]);
+
+  async function getThriftDetails() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    try {
+      const contractPromises = thriftContracts.map(async (contractAddress) => {
+        const contract = new ethers.Contract(
+          contractAddress,
+          ThriftClub.abi,
+          signer
+        );
+        const thriftClubData = await contract.getThriftClubData();
+
+        const [
+          token,
+          cycleDuration,
+          contributionAmount,
+          penalty,
+          maxParticipant,
+          name,
+          description,
+          nftContract,
+          daoContract,
+          t_state,
+          lastUpdateTimestamp,
+        ] = thriftClubData;
+
+        const thriftData = {
+          token,
+          cycleDuration: cycleDuration,
+          contributionAmount: contributionAmount,
+          penalty: penalty,
+          maxParticipant: maxParticipant,
+          name,
+          description,
+          nftContract,
+          daoContract,
+          t_state,
+          lastUpdateTimestamp: lastUpdateTimestamp,
+        };
+
+        return thriftData;
+      });
+
+      const results = await Promise.all(contractPromises);
+      console.log(results);
+
+      setThriftDataList(results);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <div className="flex flex-col bg-[#E5E5E5] font-epilogue text-black">
@@ -8,7 +85,7 @@ function CardList() {
         <div className="rounded-xl bg-[#F4F5FA] p-10">
           {/* <!-- headers content--> */}
           <div className="flex flex-col items-center justify-center text-center">
-            <div className="max-w-sm font-epilogue font-extrabold">
+            <div className="max-w-lg font-epilogue text-4xl font-extrabold">
               Browse and join your favorite club
             </div>
             <div className="mt-5 max-w-lg text-sm font-light">
@@ -16,76 +93,87 @@ function CardList() {
               information on available shopping options for your location.
             </div>
           </div>
+          {/* <div className="mt-10 flex flex-col grow items-center justify-center space-x-0 space-y-12 md:flex-row md:space-x-8 md:space-y-0"> */}
+          {/* <div className="mt-10 flex-grow overflow-ellipsis"> */}
+          {/* <div className="flex space-x-8"> */}
+          <div className="mt-10 flex flex-wrap justify-center">
+            {thriftDataList.length > 0 ? (
+              thriftContracts.map((contractAddress, index) => {
+                const thriftData = thriftDataList[index];
 
-          {/* <!-- subscriptions --> */}
-          <div className="mt-10 flex flex-col items-center justify-center space-x-0  space-y-12 md:flex-row md:space-x-8 md:space-y-0">
-            <div className="rounded-xl bg-[#f1c830]">
-              <div className="flex w-96 translate-x-4 translate-y-4 flex-col rounded-xl bg-white p-8 shadow-xl md:w-auto">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ice_logo.svg/138px-Ice_logo.svg.png?20191213230535"
-                  className="w-8"
-                />
-                <div className="mt-3 text-lg font-semibold">
-                  Ice Mobile 10GB
-                </div>
-                <div className="text-sm font-light">Up to 100Mbit/s</div>
-                <div className="my-4">
-                  <span className="text-base font-bold">299,-</span>
-                  <span className="text-sm font-light">/month</span>
-                </div>
+                return (
+                  <div
+                    key={contractAddress}
+                    className="mx-10 mb-8 rounded-xl bg-[#f1c830]"
+                  >
+                    <div className="flex w-96 translate-x-4 translate-y-4 flex-col rounded-xl bg-white p-8 shadow-xl hover:bg-blue-400 md:w-auto">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ice_logo.svg/138px-Ice_logo.svg.png?20191213230535"
+                        className="w-8"
+                      />
+                      <div className="mt-3  text-lg font-semibold">
+                        {thriftData.name}
+                      </div>
+                      <div className="text-sm font-light">
+                        {thriftData.description}
+                      </div>
+                      <div className="my-4">
+                        <span className="text-base font-bold">
+                          {ethers.BigNumber.from(
+                            thriftData.contributionAmount
+                          ).toNumber()}
+                        </span>
+                        <span className="text-sm font-light">/month</span>
+                      </div>
 
-                <button className="mt-4 rounded-full border border-[#57578d] bg-[#98a6eb] px-4  py-3 shadow-xl shadow-slate-600 hover:bg-sky-500">
-                  Add subscription
-                </button>
-              </div>
-            </div>
+                      <div>Token: {thriftData.token}</div>
+                      <div>
+                        Cycle Duration:{" "}
+                        {ethers.BigNumber.from(
+                          thriftData.cycleDuration
+                        ).toNumber()}
+                      </div>
+                      <div>
+                        Max Participants:{" "}
+                        {ethers.BigNumber.from(
+                          thriftData.maxParticipant
+                        ).toNumber()}
+                      </div>
+                      <div>
+                        Penalty:{" "}
+                        {ethers.BigNumber.from(thriftData.penalty).toNumber()}
+                      </div>
+                      {/* Include other fields from the ThriftClubData struct */}
 
-            <div className="rounded-xl bg-[#F9ECFF]">
-              <div className="flex w-96 translate-x-4 translate-y-4 flex-col rounded-xl bg-white p-8 shadow-xl md:w-auto">
-                <img
-                  src="https://www.dstny.se/app/uploads/telia_pp_rgb.png.webp"
-                  className="w-12"
-                />
-                <div className="mt-3 text-lg font-semibold">
-                  Telia Mobil 15GB
+                      <button className="mt-4 rounded-full border border-[#57578d] bg-[#98a6eb] px-4 py-3 shadow-xl shadow-slate-600 hover:bg-sky-500">
+                        Add subscription
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <>
+                {/* <div>No thrift data available?a</div> */}
+                <div className="mx-auto mt-10 w-full max-w-sm rounded-md border border-blue-300 p-4 shadow">
+                  <div className=" flex animate-pulse space-x-4 ">
+                    <div className="h-10  w-10 rounded-full bg-slate-500"></div>
+                    <div className="flex-1 space-y-6 py-1">
+                      <div className="h-2 rounded bg-slate-600"></div>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="col-span-2 h-2 rounded bg-slate-600"></div>
+                          <div className="col-span-1 h-2 rounded bg-slate-600"></div>
+                        </div>
+                        <div className="h-2 rounded bg-slate-600"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-60 text-sm font-light md:w-auto">
-                  Unlimited calls
-                </div>
-                <div className="my-4">
-                  <span className="text-base font-bold">953,-</span>
-                  <span className="text-sm font-light">/month</span>
-                </div>
-
-                <button className="mt-4 rounded-full border border-[#F0F0F6]  bg-[#F4F5FA] px-4 py-3 shadow-xl shadow-slate-600">
-                  Add subscription
-                </button>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-[#ECEEFF]">
-              <div className="flex w-96 translate-x-4 translate-y-4 flex-col rounded-xl bg-white p-8 shadow-xl md:w-auto">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Telenor_Logo.svg/1600px-Telenor_Logo.svg.png"
-                  className="w-12"
-                />
-                <div className="mt-3 text-lg font-semibold">
-                  Telenor Next Fast
-                </div>
-                <div className="w-60 text-sm font-light md:w-auto">
-                  Up to 100Mbit/s
-                </div>
-                <div className="my-4">
-                  <span className="text-base font-bold">1028,-</span>
-                  <span className="text-sm font-light">/month</span>
-                </div>
-
-                <button className="mt-4 rounded-full border border-[#F0F0F6]  bg-[#F4F5FA] px-4 py-3 shadow-xl">
-                  Add subscription
-                </button>
-              </div>
-            </div>
+              </>
+            )}
           </div>
+          {/* </div> */}
 
           <div className="flex justify-center">
             <button className="mt-12 rounded-full bg-slate-900 px-4 py-3 text-white">

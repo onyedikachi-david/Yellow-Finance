@@ -1,12 +1,18 @@
+import AuthProvider from "@/components/authProvider";
+import { StateContextProvider } from "@/context";
 import "@/styles/globals.css";
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 
-const activeChain = "polygon";
+const activeChain = "mumbai";
 
 export default function App({ Component, pageProps }) {
   return (
+    // <StateContextProvider>
     <ThirdwebProvider activeChain={activeChain}>
-      <Component {...pageProps} />
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
     </ThirdwebProvider>
+    // </StateContextProvider>
   );
 }

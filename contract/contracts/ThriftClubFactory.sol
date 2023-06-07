@@ -276,7 +276,7 @@ contract ThriftClubFactory is VRFConsumerBaseV2 {
     // Create a new subscription when the contract is initially deployed.
     function createNewSubscription(
         address _consumerAddress
-    ) internal returns (uint256) {
+    ) public returns (uint256) {
         s_subscriptionId = COORDINATOR.createSubscription();
         ThriftContractTos_subscriptionId[
             address(_consumerAddress)
