@@ -145,8 +145,14 @@ function CardList({ props }) {
                       </div>
                       {/* Include other fields from the ThriftClubData struct */}
 
-                      <button className="mt-4 rounded-full border border-[#57578d] bg-[#98a6eb] px-4 py-3 shadow-xl shadow-slate-600 hover:bg-sky-500">
-                        Add subscription
+                      <button
+                        className="mt-4 rounded-full border border-[#57578d] bg-[#98a6eb] px-4 py-3 shadow-xl shadow-slate-600 hover:bg-sky-500"
+                        onClick={() => {
+                          const clubAddress = contractAddress;
+                          window.location.href = `club/${clubAddress}`;
+                        }}
+                      >
+                        Join
                       </button>
                     </div>
                   </div>
@@ -177,7 +183,7 @@ function CardList({ props }) {
 
           <div className="flex justify-center">
             <button className="mt-12 rounded-full bg-slate-900 px-4 py-3 text-white">
-              See all subscriptions
+              More
             </button>
           </div>
         </div>

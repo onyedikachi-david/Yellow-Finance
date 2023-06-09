@@ -1,0 +1,86 @@
+
+function HeaderWrapper({ children }) {
+  return (
+    <div className="tablet:col-span-full tablet:w-full tablet:mx-0 desktop:col-start-2 desktop:col-span-10 tablet:mt-3 mx-2 w-screen bg-white text-black">
+      {children}
+    </div>
+  );
+}
+
+function Card({
+  thriftName,
+  maxParticipant,
+  thirftUrl,
+  copiedOnClick,
+  thriftDescription,
+  shouldClamp,
+  translation,
+  CycleDuration,
+  thriftStatus,
+  lastUpdateTime,
+}) {
+  const [showAll, setShowAll] = React.useState(false);
+  //   const descriptionRef = useRef();
+
+  return (
+    <div className="flex grid grid-cols-12 justify-between rounded-md">
+      <div className="col-span-10">
+        <div className="flex grid grid-cols-12 justify-between">
+          <div className="col-span-10">
+            <h1 className="text-2xl font-bold">{thriftName}</h1>
+            <p className="mt-1 text-base font-medium text-gray-600">
+              {maxParticipant}
+            </p>
+            {/* <Link
+              label={thirftUrl}
+              iconRight={<IconCopy />}
+              onClick={copiedOnClick}
+              className="mt-1.5"
+            /> */}
+            <div className="mt-1.5">
+              <p className="text-base font-medium text-gray-800">
+                {/* {showAll
+                  ? thriftDescription
+                  : truncateDescription(thriftDescription)} */}
+                Thrift Description
+              </p>
+              {shouldClamp && (
+                <Link
+                  label={
+                    showAll
+                      ? `${translation?.readLess || "Read less"} ↑`
+                      : `${translation?.readMore || "Read more"} ↓`
+                  }
+                  className="text-base font-medium"
+                  onClick={() => setShowAll((prevState) => !prevState)}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="tablet:flex-row flex flex-col items-center justify-between">
+        <div className="tablet:w-auto flex w-full space-x-3">
+          <div className="flex items-center justify-center space-x-1">
+            {/* <IconFlag className="text-primary-400" /> */}
+            <p className="text-ui-600 ft-text-sm text-gray-600">
+              {CycleDuration}
+            </p>
+          </div>
+          <div className="flex items-center justify-center space-x-1">
+            {/* <IconBlock className="text-primary-400" /> */}
+            <p className="text-ui-600 ft-text-sm capitalize text-gray-600">
+              {thriftStatus}
+            </p>
+          </div>
+          <div className="flex items-center justify-center space-x-1">
+            {/* <IconCommunity className="text-primary-400" /> */}
+            <p className="text-ui-600 ft-text-sm text-gray-600">
+              {lastUpdateTime}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

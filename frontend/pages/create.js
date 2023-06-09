@@ -9,6 +9,7 @@ import { useStateContext } from "@/context";
 // const { mycreateThriftClub } = useStateContext();
 
 const tokenOptions = [
+  { label: "Native", value: "0x0000000000000000000000000000000000000000" },
   { label: "USDC", value: "0x0FA8781a83E46826621b3BC094Ea2A0212e71B23" },
   { label: "USDT", value: "0xA02f6adc7926efeBBd59Fd43A84f4E0c0c91e832" },
   { label: "DAI", value: "0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F" },
