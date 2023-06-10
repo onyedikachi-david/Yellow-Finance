@@ -211,7 +211,9 @@ function Create() {
             />
             {errors.penalty &&
               errors.penalty.type === "isHalfOfContributionAmount" && (
-                <span>The penalty must be half of the contribution amount</span>
+                <span className="text-sm text-red-500">
+                  The penalty must be half of the contribution amount
+                </span>
               )}
           </div>
 
