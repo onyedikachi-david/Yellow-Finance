@@ -8,11 +8,15 @@ const activeChain = "mumbai";
 export default function App({ Component, pageProps }) {
   return (
     // <StateContextProvider>
-    <ThirdwebProvider activeChain={activeChain}>
-      <AuthProvider>
-        <Component {...pageProps} />
-      </AuthProvider>
-    </ThirdwebProvider>
-    // </StateContextProvider>
+    <>
+      {/* // <StateContextProvider> */}
+      <ThirdwebProvider activeChain={activeChain}>
+        <AuthProvider>
+          <Component {...pageProps} />
+        </AuthProvider>
+      </ThirdwebProvider>
+      {/* // </StateContextProvider> */}
+      <Analytics />
+    </>
   );
 }

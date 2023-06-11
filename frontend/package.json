@@ -16,6 +16,7 @@
     "@heroicons/react": "^2.0.18",
     "@thirdweb-dev/react": "^3",
     "@thirdweb-dev/sdk": "^3.10.20",
+    "@vercel/analytics": "^1.0.1",
     "date-fns": "^2.30.0",
     "ethers": "5",
     "next": "^13",
