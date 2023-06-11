@@ -2,6 +2,7 @@ import AuthProvider from "@/components/authProvider";
 import { StateContextProvider } from "@/context";
 import "@/styles/globals.css";
 import { ThirdwebProvider } from "@thirdweb-dev/react";
+import { Analytics } from "@vercel/analytics/react";
 
 const activeChain = "mumbai";
 
