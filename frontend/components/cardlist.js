@@ -4,6 +4,7 @@ import { useContract, useContractRead } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import ThriftClub from "@/ThriftClub.sol/ThriftClub.json";
 import { format, differenceInWeeks } from "date-fns";
+import { useNetworkMismatch } from "@thirdweb-dev/react";
 
 function CardList({ props }) {
   const [thriftContracts, setThriftContracts] = useState([]);
@@ -13,6 +14,7 @@ function CardList({ props }) {
     "0x11277e0BEACe37deBEF8578619A2afC3F66ab4F1"
   );
   const { data, isLoading } = useContractRead(contract, "getThriftClubs", []);
+  const isMismatched = useNetworkMismatch();
 
   useEffect(() => {
     if (!isLoading && data.length > 0) {
@@ -24,7 +26,7 @@ function CardList({ props }) {
     if (thriftContracts.length > 0) {
       getThriftDetails();
     }
-  }, [thriftContracts]);
+  }, [thriftContracts, isMismatched]);
 
   async function getThriftDetails() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -79,14 +81,6 @@ function CardList({ props }) {
     }
   }
 
-  // const currentDate = new Date();
-  // const weeks = differenceInWeeks(
-  //   currentDate,
-  //   cycleD,
-  //   new Date(currentDate.getTime() - cycleD * 1000)
-  // );
-  // const formattedCycleDuration = `${weeks} week${weeks !== 1 ? "s" : ""}`;
-
   return (
     <>
       <div className="flex flex-col bg-[#E5E5E5] font-epilogue text-black">
@@ -97,14 +91,8 @@ function CardList({ props }) {
             <div className="max-w-lg font-epilogue text-4xl font-extrabold">
               Browse and join your favorite club
             </div>
-            {/* <div className="mt-5 max-w-lg text-sm font-light">
-              All devices come with free delivery or pickup as standard. See
-              information on available shopping options for your location.
-            </div> */}
           </div>
-          {/* <div className="mt-10 flex flex-col grow items-center justify-center space-x-0 space-y-12 md:flex-row md:space-x-8 md:space-y-0"> */}
-          {/* <div className="mt-10 flex-grow overflow-ellipsis"> */}
-          {/* <div className="flex space-x-8"> */}
+
           <div className="mt-10 flex flex-wrap justify-center">
             {thriftDataList.length > 0 ? (
               thriftContracts.map((contractAddress, index) => {
@@ -142,7 +130,10 @@ function CardList({ props }) {
                             thriftData.contributionAmount
                           ).toNumber()}
                         </span>
-                        <span className="text-sm font-light">/Week</span>
+                        <span className="text-sm font-light">
+                          {" "}
+                          Contribution per week
+                        </span>
                       </div>
 
                       <div>

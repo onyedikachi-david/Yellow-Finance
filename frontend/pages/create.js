@@ -211,7 +211,7 @@ function Create() {
               className="mb-2 block text-sm font-bold text-gray-700"
               htmlFor="penalty"
             >
-              Penalty:
+              Penalty fee:
             </label>
             <input
               type="number"
@@ -225,6 +225,7 @@ function Create() {
                     parseFloat(value) === penaltyAmount,
                 },
               })}
+              onChange={handleContributionAmountChange}
               value={penaltyAmount}
               readOnly
             />

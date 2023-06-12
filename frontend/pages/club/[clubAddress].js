@@ -171,20 +171,20 @@ const ParticipantList = ({ contractAddress }) => {
     const fetchParticipants = async () => {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const contractABI = [
-          "function participants(uint256) view returns (address)",
-        ];
+
         const contract = new ethers.Contract(
           contractAddress,
           ThriftClub.abi,
           provider
         );
 
+        console.log(contract);
+
         // const participantsCount = await contract.participants();
         // const participants = [];
 
         // for (let i = 0; i < participantsCount; i++) {
-        const participant = await contract.participants({});
+        const participant = await contract.participants([]);
         // participants.push(participant);
         // }
 
@@ -338,7 +338,7 @@ const Dashboard = ({
         let createPenaltyTransaction = await thriftContract.payPenaltyFee(
           token,
           toString(0),
-          { value: penalty }
+          { value: penaltyAmount }
         );
 
         console.log("Token and penalty amount", token, penaltyAmount);
@@ -579,7 +579,7 @@ const Dashboard = ({
             </div>
           </div>
         </Card>
-        <Card title="DAO Details">
+        <Card title="More Details">
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
               <span className="font-medium text-gray-600">NFT Contract:</span>
@@ -601,7 +601,11 @@ const Dashboard = ({
           className="mr-6 mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
           onClick={() => handlePayPenalty()}
         >
-          {tokenAllowance ? "Approve penalty fee" : "Pay Penalty"}
+          {token === "0x0000000000000000000000000000000000000000"
+            ? "Pay penalty"
+            : tokenAllowance
+            ? "Approve penalty"
+            : "Pay penalty"}
         </button>
         <button
           className={`mr-8 mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600 ${

@@ -7,6 +7,9 @@ import {
   ClipboardIcon,
 } from "@heroicons/react/24/outline";
 import { ConnectWallet } from "@thirdweb-dev/react";
+import { useNetworkMismatch } from "@thirdweb-dev/react";
+import { useSwitchChain } from "@thirdweb-dev/react";
+import { Mumbai } from "@thirdweb-dev/chains";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -19,6 +22,21 @@ function classNames(...classes) {
 }
 
 export default function Nav() {
+  const isMismatched = useNetworkMismatch();
+  const switchChain = useSwitchChain();
+
+  if (isMismatched)
+    return (
+      <>
+        <button
+          onClick={() => switchChain(Mumbai.chainId)}
+          className="fixed right-4 top-4 rounded bg-red-600 px-4 py-2 font-bold text-white hover:bg-yellow-600"
+        >
+          Wrong Chain, Switch to Polygon Mumbai!
+        </button>
+      </>
+    );
+
   return (
     <Disclosure as="nav" className=" bg-blue-900">
       {({ open }) => (
