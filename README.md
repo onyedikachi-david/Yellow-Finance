@@ -20,6 +20,8 @@ The Ideal Thrift
 
 - link: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB
 - registrar: 0x57A4a13b35d25EE78e084168aBaC5ad360252467
+- ThriftClubFactory Deployed address (current):  0x11277e0BEACe37deBEF8578619A2afC3F66ab4F1
+- ThriftClubFactory Deployed addresses (before): 0x25BeBb3a758262b5A640f2f9011b420419eacE69,0x5d88b06E942e9AbB9470e80384d7E28ACb743511
 
 # DAO-based Thrift DApp
 

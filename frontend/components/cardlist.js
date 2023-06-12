@@ -3,13 +3,14 @@ import { useEffect, useState, useRef } from "react";
 import { useContract, useContractRead } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import ThriftClub from "@/ThriftClub.sol/ThriftClub.json";
+import { format, differenceInWeeks } from "date-fns";
 
 function CardList({ props }) {
   const [thriftContracts, setThriftContracts] = useState([]);
 
   const [thriftDataList, setThriftDataList] = useState([]);
   const { contract } = useContract(
-    "0x25BeBb3a758262b5A640f2f9011b420419eacE69"
+    "0x11277e0BEACe37deBEF8578619A2afC3F66ab4F1"
   );
   const { data, isLoading } = useContractRead(contract, "getThriftClubs", []);
 
@@ -78,6 +79,14 @@ function CardList({ props }) {
     }
   }
 
+  // const currentDate = new Date();
+  // const weeks = differenceInWeeks(
+  //   currentDate,
+  //   cycleD,
+  //   new Date(currentDate.getTime() - cycleD * 1000)
+  // );
+  // const formattedCycleDuration = `${weeks} week${weeks !== 1 ? "s" : ""}`;
+
   return (
     <>
       <div className="flex flex-col bg-[#E5E5E5] font-epilogue text-black">
@@ -88,10 +97,10 @@ function CardList({ props }) {
             <div className="max-w-lg font-epilogue text-4xl font-extrabold">
               Browse and join your favorite club
             </div>
-            <div className="mt-5 max-w-lg text-sm font-light">
+            {/* <div className="mt-5 max-w-lg text-sm font-light">
               All devices come with free delivery or pickup as standard. See
               information on available shopping options for your location.
-            </div>
+            </div> */}
           </div>
           {/* <div className="mt-10 flex flex-col grow items-center justify-center space-x-0 space-y-12 md:flex-row md:space-x-8 md:space-y-0"> */}
           {/* <div className="mt-10 flex-grow overflow-ellipsis"> */}
@@ -100,6 +109,16 @@ function CardList({ props }) {
             {thriftDataList.length > 0 ? (
               thriftContracts.map((contractAddress, index) => {
                 const thriftData = thriftDataList[index];
+                const currentDate = new Date();
+                const weeks = differenceInWeeks(
+                  currentDate,
+                  new Date(
+                    currentDate.getTime() - thriftData.cycleDuration * 1000
+                  )
+                );
+                const formattedCycleDuration = `${weeks} week${
+                  weeks !== 1 ? "s" : ""
+                }`;
 
                 return (
                   <div
@@ -108,7 +127,7 @@ function CardList({ props }) {
                   >
                     <div className="flex w-96 translate-x-4 translate-y-4 flex-col rounded-xl bg-white p-8 shadow-xl hover:bg-blue-400 md:w-auto">
                       <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ice_logo.svg/138px-Ice_logo.svg.png?20191213230535"
+                        src={`https://avatars.dicebear.com/api/male/${contractAddress}.svg`}
                         className="w-8"
                       />
                       <div className="mt-3  text-lg font-semibold">
@@ -123,16 +142,26 @@ function CardList({ props }) {
                             thriftData.contributionAmount
                           ).toNumber()}
                         </span>
-                        <span className="text-sm font-light">/month</span>
+                        <span className="text-sm font-light">/Week</span>
                       </div>
 
-                      <div>Token: {thriftData.token}</div>
                       <div>
-                        Cycle Duration:{" "}
-                        {ethers.BigNumber.from(
-                          thriftData.cycleDuration
-                        ).toNumber()}
+                        Token:{" "}
+                        {thriftData.token ===
+                        "0x0FA8781a83E46826621b3BC094Ea2A0212e71B23"
+                          ? "USDC"
+                          : thriftData.token ===
+                            "0xA02f6adc7926efeBBd59Fd43A84f4E0c0c91e832"
+                          ? "USDT"
+                          : thriftData.token ===
+                            "0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F"
+                          ? "DAI"
+                          : thriftData.token ===
+                            "0x0d787a4a1548f673ed375445535a6c7A1EE56180"
+                          ? "WBTC"
+                          : "Native Coin"}
                       </div>
+                      <div>Cycle Duration: {formattedCycleDuration}</div>
                       <div>
                         Max Participants:{" "}
                         {ethers.BigNumber.from(

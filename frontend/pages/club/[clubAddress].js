@@ -151,353 +151,6 @@ const Link = ({ label, iconRight, onClick, className }) => (
   </button>
 );
 
-const ThriftCard = ({
-  token,
-  cycleDuration,
-  contributionAmount,
-  penalty,
-  maxParticipant,
-  thriftName,
-  thriftDescription,
-  nftContract,
-  daoContract,
-  t_state,
-  lastUpdateTime,
-  url,
-  clubAddress,
-}) => {
-  const [showAll, setShowAll] = useState(false);
-
-  const address = useAddress();
-
-  const [tokenAllowance, setTokenAllowance] = useState(false);
-  const [penaltyPaid, setPenaltyPaid] = useState(false);
-
-  const copiedOnClick = () => {
-    if (!navigator.clipboard) {
-      console.error("Failed to copy link because clipboard is not available");
-      return;
-    }
-    navigator.clipboard.writeText(url).then(() => {
-      console.log(`Copied URL "${url}" to clipboard`);
-    });
-  };
-
-  const currentDate = new Date();
-  const weeks = differenceInWeeks(
-    currentDate,
-    new Date(currentDate.getTime() - cycleDuration * 1000)
-  );
-  const formattedCycleDuration = `${weeks} week${weeks !== 1 ? "s" : ""}`;
-
-  const timestamp = lastUpdateTime * 1000; // Convert the timestamp to milliseconds
-  const formattedLastUpdateTime = new Date(timestamp).toLocaleString(); // Format the date and time as per the user's locale
-
-  const tStateLabels = {
-    OPEN: "Open",
-    CLOSED: "Closed",
-    PAYMENT_IN_PROGRESS: "Payment in Progress",
-    COMPLETED: "Completed",
-  };
-
-  React.useEffect(() => {
-    if (penalty) {
-      if (token == "0x0000000000000000000000000000000000000000") {
-        setTokenAllowance(true);
-      } else {
-        console.log("Checking allowance for inputted amount");
-
-        const checkAllowance = async () => {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-          const signer = provider.getSigner();
-
-          //  const IERC20ABI = require("../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json");
-          let erc20Contract = new ethers.Contract(token, IERC20ABI.abi, signer);
-
-          let data = await erc20Contract.allowance(address, clubAddress);
-          console.log(tokenAllowance);
-          console.log(penalty * 1e18);
-          console.log(parseInt(data._hex) / 1e18);
-          // If allowance is smaller set allowance true
-          const penaltyAmount = (Number(penalty) * 1e18).toString(); // Assuming `penalty` is the penalty amount
-          console.log(
-            "These:  ",
-            parseInt(data._hex) * 1e18,
-            "Others:  ",
-            penalty * 1e18
-          );
-          if (parseInt(data._hex) * 1e18 < penalty * 1e18) {
-            setTokenAllowance(true);
-          } else {
-            setTokenAllowance(false);
-          }
-        };
-        checkAllowance();
-      }
-    }
-  }, [penalty, tokenAllowance]);
-
-  const formattedTState = tStateLabels[t_state] || t_state;
-  const handlePayPenalty = async () => {
-    if (token == "0x0000000000000000000000000000000000000000") {
-      // MAke native payment
-      try {
-        // let erc20Contract = new ethers.Contract(token, IERC20ABI.abi, signer);
-
-        // let data = await erc20Contract.allowance(address, clubAddress);
-        console.log("Here now");
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-        console.log(provider);
-        // Get the signer
-        const signer = provider.getSigner();
-        const contractAddress = clubAddress;
-        const thriftContract = new ethers.Contract(
-          contractAddress,
-          ThriftClub.abi,
-          signer
-        );
-        console.log(penalty * 1e18);
-        const penaltyAmount = (penalty * 1e18).toString(); // Assuming `penalty` is the penalty amount
-        console.log(penaltyAmount);
-        let createPenaltyTransaction = await thriftContract.payPenaltyFee(
-          token,
-          toString(0),
-          { value: penalty }
-        );
-
-        console.log("Token and penalty amount", token, penaltyAmount);
-        setPenaltyPaid(true);
-
-        await createPenaltyTransaction
-          .wait()
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } catch (error) {
-        console.error("Failed to pay penalty fee:", error);
-      }
-    } else {
-      if (!tokenAllowance) {
-        try {
-          // let erc20Contract = new ethers.Contract(token, IERC20ABI.abi, signer);
-
-          // let data = await erc20Contract.allowance(address, clubAddress);
-          console.log("Here now");
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-          console.log(provider);
-          // Get the signer
-          const signer = provider.getSigner();
-          const contractAddress = clubAddress;
-          const thriftContract = new ethers.Contract(
-            contractAddress,
-            ThriftClub.abi,
-            signer
-          );
-          console.log(penalty * 1e18);
-          const penaltyAmount = (penalty * 1e18).toString(); // Assuming `penalty` is the penalty amount
-          console.log(penaltyAmount);
-          let createPenaltyTransaction = await thriftContract.payPenaltyFee(
-            token,
-            ethers.utils.parseEther((penalty * 1e18).toString()),
-            {}
-          );
-
-          console.log("Token and penalty amount", token, penaltyAmount);
-          setPenaltyPaid(true);
-
-          await createPenaltyTransaction
-            .wait()
-            .then((res) => {
-              console.log(res);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } catch (error) {
-          console.error("Failed to pay penalty fee:", error);
-        }
-      } else {
-        try {
-          console.log(tokenAllowance);
-          // Create an Ethereum provider
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-          console.log(provider);
-          // Get the signer
-          const signer = provider.getSigner();
-
-          // Contract address and ABI
-          const contractAddress = clubAddress;
-          const contractABI = ThriftClub.abi;
-
-          // Create the contract instance
-          // const contract = new ethers.Contract(
-          //   contractAddress,
-          //   contractABI,
-          //   signer
-          // );
-
-          // var fee = Number(values.value) * 0.005 + token.value;
-
-          const penaltyAmount = (Number(penalty) * 1e18).toString(); // Assuming `penalty` is the penalty amount
-
-          let contract = new ethers.Contract(token, IERC20ABI.abi, signer);
-          console.log(contract);
-
-          // Call the Solidity function to pay the penalty fee
-          const tokenAddress = token; // Assuming `token` is the token address
-          // const penaltyAmount = ethers.utils.parseEther(Number(penalty) * 1e18); // Assuming `penalty` is the penalty amount
-          // const penaltyAmount = ethers.utils.parseEther(penalty.toString());
-          console.log("Penalty  ", penaltyAmount);
-          // const tx = await contract.payPenaltyFee(tokenAddress, penaltyAmount);
-          let transaction = await contract.approve(
-            contractAddress,
-            penaltyAmount
-          );
-
-          // Wait for the transaction to be mined
-          await transaction.wait().then((res) => {
-            console.log(res);
-          });
-          setTokenAllowance(false);
-
-          // Handle the successful penalty payment
-          console.log("Penalty fee approved successfully");
-        } catch (error) {
-          // Handle the error
-          console.error("Failed to approve penalty fee allowance:", error);
-        }
-      }
-    }
-  };
-
-  const hasPaidPenalty = async (contract, address) => {
-    try {
-      const result = await contract.hasPaidPenalty(address);
-      return result;
-    } catch (error) {
-      console.error("Failed to check if user has paid penalty:", error);
-      return false;
-    }
-  };
-
-  // const CheckPenaltyPayment = () => {
-  const [paidPenalty, setPaidPenalty] = useState(false);
-
-  React.useEffect(() => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // const contractABI = ['function hasPaidPenalty(address) view returns (bool)'];
-    const contract = new ethers.Contract(clubAddress, ThriftClub.abi, provider);
-
-    const checkPayment = async () => {
-      const result = await hasPaidPenalty(contract, address);
-      setPaidPenalty(result);
-    };
-
-    checkPayment();
-  }, [penaltyPaid]);
-
-  const handleJoinClub = async () => {
-    try {
-      // Create an a Ethereum provider
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-      // Get the signer
-      const signer = provider.getSigner();
-
-      // Contract address and ABI
-      const contractAddress = clubAddress;
-      const contractABI = ThriftClub.abi;
-
-      // Create the contract instance
-      const contract = new ethers.Contract(
-        contractAddress,
-        contractABI,
-        signer
-      );
-
-      // Call the Solidity function to pay the penalty fee
-      const tokenAddress = token; // Assuming `token` is the token address
-      // const penaltyAmount = ethers.utils.parseEther(Number(penalty)); // Assuming `penalty` is the penalty amount
-      const penaltyAmount = ethers.utils.parseEther(penalty.toString());
-      const tx = await contract.payPenaltyFee(tokenAddress, penaltyAmount);
-
-      // Wait for the transaction to be mined
-      await tx.wait();
-
-      // Handle the successful penalty payment
-      console.log("Penalty fee paid successfully");
-    } catch (error) {
-      // Handle the error
-      console.error("Failed to pay penalty fee:", error);
-    }
-  };
-
-  return (
-    <div className="justify-center rounded-lg bg-white p-4 shadow-lg">
-      <h1 className="mb-2 text-2xl font-bold text-black">
-        Thrift Club Details
-      </h1>
-      <h2 className="mb-2 text-2xl font-bold text-black">
-        Club Name: {thriftName}
-      </h2>
-      <p className="mb-2 text-gray-600">
-        Maximum Participants: {maxParticipant}
-      </p>
-      <p className="mb-2 text-gray-600">Club Payment Token: {token}</p>
-      <div className="mb-2 text-gray-600">
-        Club URL:
-        <Link
-          label={url}
-          iconRight={<ClipboardIcon className="h-5 w-5" />}
-          onClick={copiedOnClick}
-          className="block text-blue-500 hover:text-blue-600"
-        />
-      </div>
-      <p className="mt-2 text-gray-600">
-        Cycle Duration: {formattedCycleDuration}
-      </p>
-      <p className="text-gray-600">Contribution Amount: {contributionAmount}</p>
-      <p className="text-gray-600">Penalty: {penalty}</p>
-      <p className="text-gray-600">
-        NFT Contract: <span className="break-all">{nftContract}</span>
-      </p>
-      <p className="text-gray-600">
-        DAO Contract: <span className="break-all">{daoContract}</span>
-      </p>
-      <p className="text-gray-600">Tanda State: {formattedTState}</p>
-      <p className="text-gray-600">
-        Last Update Time: {formattedLastUpdateTime}
-      </p>
-      <div className="mt-2">
-        <p className="text-gray-800">Club Description: {thriftDescription}</p>
-      </div>
-      <button
-        className="mr-6 mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-        onClick={() => handlePayPenalty()}
-      >
-        {tokenAllowance ? "Approve penalty fee" : "Pay Penalty"}
-      </button>
-      <button
-        className={`mr-8 mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600 ${
-          !paidPenalty ? "cursor-not-allowed  opacity-50" : ""
-        }`}
-        onClick={handleJoinClub}
-        disabled={!paidPenalty}
-      >
-        {" "}
-        Join Thrift{" "}
-      </button>
-    </div>
-  );
-};
-
 const ParticipantItem = ({ address }) => {
   return (
     <div className=" flex items-center space-x-2 text-black">
@@ -657,7 +310,7 @@ const Dashboard = ({
         checkAllowance();
       }
     }
-  }, [penalty, tokenAllowance]);
+  }, [penalty, tokenAllowance, token]);
 
   const formattedTState = tStateLabels[t_state] || t_state;
   const handlePayPenalty = async () => {
@@ -882,7 +535,17 @@ const Dashboard = ({
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
               <span className="font-medium text-gray-600">Token:</span>
-              <span className="text-lg font-bold">{token}</span>
+              <span className="text-lg font-bold">
+                {token === "0x0FA8781a83E46826621b3BC094Ea2A0212e71B23"
+                  ? "USDC"
+                  : token === "0xA02f6adc7926efeBBd59Fd43A84f4E0c0c91e832"
+                  ? "USDT"
+                  : token === "0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F"
+                  ? "DAI"
+                  : token === "0x0d787a4a1548f673ed375445535a6c7A1EE56180"
+                  ? "WBTC"
+                  : "Native Coin"}
+              </span>
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-medium text-gray-600">Cycle Duration:</span>
@@ -928,7 +591,7 @@ const Dashboard = ({
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-medium text-gray-600">Thrift State:</span>
-              <span className="text-lg font-bold">{t_state}</span>
+              <span className="text-lg font-bold">{formattedTState}</span>
             </div>
           </div>
         </Card>

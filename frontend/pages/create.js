@@ -27,9 +27,11 @@ function Create() {
     watch,
   } = useForm();
 
+  const [penaltyAmount, setPenaltyAmount] = React.useState("");
+
   // Thirdweb
   const { contract } = useContract(
-    "0x25BeBb3a758262b5A640f2f9011b420419eacE69"
+    "0x11277e0BEACe37deBEF8578619A2afC3F66ab4F1"
   );
   const { mutateAsync: createThriftClub, isLoading } = useContractWrite(
     contract,
@@ -37,7 +39,15 @@ function Create() {
   );
 
   const onSubmit = async (formData) => {
-    console.log(formData);
+    console.log(
+      formData.token,
+      formData.cycleDuration * 604800,
+      formData.contributionAmount * 1e18,
+      formData.penalty * 1e18,
+      formData.maxParticipant,
+      formData.name,
+      formData.description
+    );
     try {
       const data = await createThriftClub({
         args: [
@@ -63,6 +73,12 @@ function Create() {
   const isHalfOfContributionAmount = (value) => {
     const contributionAmount = watch("contributionAmount");
     return Number(value) === Number(contributionAmount) / 2;
+  };
+
+  const handleContributionAmountChange = (e) => {
+    const contributionAmount = e.target.value;
+    const calculatedPenaltyAmount = contributionAmount / 2;
+    setPenaltyAmount(calculatedPenaltyAmount);
   };
 
   return (
@@ -205,9 +221,12 @@ function Create() {
               ref={register({
                 required: true,
                 validate: {
-                  isHalfOfContributionAmount: isHalfOfContributionAmount,
+                  isHalfOfContributionAmount: (value) =>
+                    parseFloat(value) === penaltyAmount,
                 },
               })}
+              value={penaltyAmount}
+              readOnly
             />
             {errors.penalty &&
               errors.penalty.type === "isHalfOfContributionAmount" && (
