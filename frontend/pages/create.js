@@ -5,6 +5,7 @@ import { useContract, useContractWrite, Web3Button } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 // import {mycreateThriftClub } from
 import { useStateContext } from "@/context";
+import Router from "next/router";
 
 // const { mycreateThriftClub } = useStateContext();
 
@@ -39,15 +40,7 @@ function Create() {
   );
 
   const onSubmit = async (formData) => {
-    console.log(
-      formData.token,
-      formData.cycleDuration * 604800,
-      formData.contributionAmount * 1e18,
-      formData.penalty * 1e18,
-      formData.maxParticipant,
-      formData.name,
-      formData.description
-    );
+    console.log(formData);
     try {
       const data = await createThriftClub({
         args: [
@@ -198,6 +191,7 @@ function Create() {
               id="contributionAmount"
               className="w-full rounded-lg border border-gray-300 px-3 py-2"
               ref={register({ required: true })}
+              onChange={handleContributionAmountChange}
             />
             {errors.contributionAmount && (
               <span className="text-sm text-red-500">
@@ -225,7 +219,6 @@ function Create() {
                     parseFloat(value) === penaltyAmount,
                 },
               })}
-              onChange={handleContributionAmountChange}
               value={penaltyAmount}
               readOnly
             />
@@ -308,26 +301,6 @@ function Create() {
             {/* isLoading */}
             Create Thrift Club
           </button>
-          {/* <Web3Button
-            contractAddress="0x434be29697DA9Fa72D3500662144a06738424192"
-            action={(contract) => {
-              contract.call("createThriftClub", [
-                formData.token,
-                formData.cycleDuration,
-                formData.contributionAmount,
-                formData.penalty,
-                formData.maxParticipant,
-                formData.name,
-                formData.description,
-              ]);
-            }}
-            onSuccess={(result) => alert("Success!")}
-            // onSubmit={() => console.log("Transaction submitted")}
-            // onError={(error) => alert("Something went wrong!")}
-            // isDisabled
-          >
-            createThriftClub
-          </Web3Button> */}
         </form>
       </div>
       {/* Alert */}
@@ -344,9 +317,11 @@ function Create() {
             </div>
             <button
               className="rounded-lg bg-blue-500 px-4 py-2 text-white"
-              onClick={() => setTransactionDetails(null)}
+              onClick={() =>
+                Router.push(`/club/${transactionDetails.thriftClub}`)
+              }
             >
-              Close
+              Open Club
             </button>
           </div>
         </div>

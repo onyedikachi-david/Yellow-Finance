@@ -242,6 +242,9 @@ const Dashboard = ({
   url,
   clubAddress,
 }) => {
+  console.log("T_State:  ", t_state);
+  console.log("T_State:  ", typeof t_state);
+
   const address = useAddress();
 
   const [tokenAllowance, setTokenAllowance] = useState(false);
@@ -268,11 +271,13 @@ const Dashboard = ({
   const formattedLastUpdateTime = new Date(timestamp).toLocaleString(); // Format the date and time as per the user's locale
 
   const tStateLabels = {
-    OPEN: "Open",
-    CLOSED: "Closed",
-    PAYMENT_IN_PROGRESS: "Payment in Progress",
-    COMPLETED: "Completed",
+    0: "Open",
+    1: "Closed",
+    2: "Payment in Progress",
+    3: "Completed",
   };
+
+  const formattedTState = tStateLabels[t_state] || t_state.toString();
 
   React.useEffect(() => {
     if (penalty) {
@@ -312,14 +317,10 @@ const Dashboard = ({
     }
   }, [penalty, tokenAllowance, token]);
 
-  const formattedTState = tStateLabels[t_state] || t_state;
   const handlePayPenalty = async () => {
     if (token == "0x0000000000000000000000000000000000000000") {
-      // MAke native payment
+      // Make native payment
       try {
-        // let erc20Contract = new ethers.Contract(token, IERC20ABI.abi, signer);
-
-        // let data = await erc20Contract.allowance(address, clubAddress);
         console.log("Here now");
         const provider = new ethers.providers.Web3Provider(window.ethereum);
 
@@ -335,10 +336,17 @@ const Dashboard = ({
         console.log(penalty * 1e18);
         const penaltyAmount = (penalty * 1e18).toString(); // Assuming `penalty` is the penalty amount
         console.log(penaltyAmount);
+        // let amount_wei = new ethers.BigNumber(penalty).shiftedBy(18).toString();
+
+        let penaltyAmount2 = ethers.utils.parseUnits(penalty.toString(), 18);
+        let amountWei = penaltyAmount2.toString();
+        // let amount_wei = ethers.BigNumber.from(penalty * 1e18).toString();
+        // let zero_token_amt = ethers.BigNumber.from(penalty * 1e18).toString();
+
         let createPenaltyTransaction = await thriftContract.payPenaltyFee(
           token,
-          toString(0),
-          { value: penaltyAmount }
+          amountWei,
+          { value: amountWei }
         );
 
         console.log("Token and penalty amount", token, penaltyAmount);
