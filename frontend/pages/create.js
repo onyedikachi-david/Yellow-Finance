@@ -1,11 +1,13 @@
 import Nav from "@/components/nav";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useContract, useContractWrite, Web3Button } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 // import {mycreateThriftClub } from
 import { useStateContext } from "@/context";
+import { ethers } from "ethers";
 import Router from "next/router";
+import ThriftClubFactory from "@/ThriftClubFactory.sol/ThriftClubFactory.json";
 
 // const { mycreateThriftClub } = useStateContext();
 
@@ -16,6 +18,8 @@ const tokenOptions = [
   { label: "DAI", value: "0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F" },
   { label: "WBTC", value: "0x0d787a4a1548f673ed375445535a6c7A1EE56180" },
 ];
+
+const thriftClubFactoryAddress = "0x7c1215907A5d4AD9B0fC1a147111A657CA8d3A9e";
 
 function Create() {
   const [transactionDetails, setTransactionDetails] = React.useState(null);
@@ -31,33 +35,61 @@ function Create() {
   const [penaltyAmount, setPenaltyAmount] = React.useState("");
 
   // Thirdweb
-  const { contract } = useContract(
-    "0x1483EfE8025cCf49b529AE93dc4C1dD7720a2A24"
-  );
-  const { mutateAsync: createThriftClub, isLoading } = useContractWrite(
-    contract,
-    "createThriftClub"
-  );
+  // const { contract } = useContract(
+  //   "0x1483EfE8025cCf49b529AE93dc4C1dD7720a2A24"
+  // );
+  // const { mutateAsync: createThriftClub, isLoading } = useContractWrite(
+  //   contract,
+  //   "createThriftClub"
+  // );
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (formData) => {
     console.log(formData);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
     try {
-      const data = await createThriftClub({
-        args: [
-          formData.token,
-          formData.cycleDuration * 604800,
-          formData.contributionAmount,
-          formData.penalty,
-          formData.maxParticipant,
-          formData.name,
-          formData.description,
-        ],
-      });
-      console.info("contract call success", data);
-      const creator = data.receipt.events[0].args.creator;
-      const thriftClub = data.receipt.events[0].args.thriftClub;
-      console.log(creator);
-      console.log(thriftClub);
+      const contract = new ethers.Contract(
+        thriftClubFactoryAddress,
+        ThriftClubFactory.abi,
+        signer
+      );
+
+      console.log(contract);
+
+      // const data = await createThriftClub({
+      //   args: [
+      //     formData.token,
+      //     formData.cycleDuration * 604800,
+      //     formData.contributionAmount,
+      //     formData.penalty,
+      //     formData.maxParticipant,
+      //     formData.name,
+      //     formData.description,
+      //   ],
+      // });
+      const overrides = {
+        value: ethers.utils.parseEther("0.001"),
+      };
+
+      const createThriftTx = await contract.createThriftClub(
+        formData.token,
+        formData.cycleDuration * 604800,
+        formData.contributionAmount,
+        formData.penalty,
+        formData.maxParticipant,
+        formData.name,
+        formData.description,
+        overrides
+      );
+      createThriftTx.wait();
+      console.log("Club transaction", createThriftTx.hash());
+      // console.info("contract call success", data);
+      // const creator = data.receipt.events[0].args.creator;
+      // const thriftClub = data.receipt.events[0].args.thriftClub;
+      // console.log(creator);
+      // console.log(thriftClub);
       setTransactionDetails({ creator, thriftClub });
     } catch (err) {
       console.error("contract call failure", err);

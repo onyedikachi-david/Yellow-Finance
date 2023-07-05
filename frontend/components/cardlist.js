@@ -5,81 +5,98 @@ import { ethers } from "ethers";
 import ThriftClub from "@/ThriftClub.sol/ThriftClub.json";
 import { format, differenceInWeeks } from "date-fns";
 import { useNetworkMismatch } from "@thirdweb-dev/react";
+import ThriftClubFactory from "@/ThriftClubFactory.sol/ThriftClubFactory.json";
+
+const thriftClubFactoryAddress = "0x7c1215907A5d4AD9B0fC1a147111A657CA8d3A9e";
 
 function CardList({ props }) {
   const [thriftContracts, setThriftContracts] = useState([]);
-
   const [thriftDataList, setThriftDataList] = useState([]);
-  const { contract } = useContract(
-    "0x1483EfE8025cCf49b529AE93dc4C1dD7720a2A24"
-  );
-  const { data, isLoading } = useContractRead(contract, "getThriftClubs", []);
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
   const isMismatched = useNetworkMismatch();
 
-  useEffect(() => {
-    if (!isLoading && data.length > 0) {
-      setThriftContracts(data);
-    }
-  }, [isLoading, data]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  useEffect(() => {
-    if (thriftContracts.length > 0) {
-      getThriftDetails();
+  async function getThrifts() {
+    try {
+      setIsLoading(true);
+      const contract = new ethers.Contract(
+        thriftClubFactoryAddress,
+        ThriftClubFactory.abi,
+        signer
+      );
+      const thriftClubs = await contract.getThriftClubs();
+      console.log(thriftClubs);
+      setThriftContracts(thriftClubs);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
     }
-  }, [thriftContracts, isMismatched]);
+  }
 
   async function getThriftDetails() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+    const contractPromises = thriftContracts.map(async (contractAddress) => {
+      const contract = new ethers.Contract(
+        contractAddress,
+        ThriftClub.abi,
+        signer
+      );
+      const thriftClubData = await contract.getThriftClubData();
+
+      const [
+        token,
+        cycleDuration,
+        contributionAmount,
+        penalty,
+        maxParticipant,
+        name,
+        description,
+        nftContract,
+        daoContract,
+        t_state,
+        lastUpdateTimestamp,
+      ] = thriftClubData;
+
+      const thriftData = {
+        token,
+        cycleDuration: cycleDuration,
+        contributionAmount: contributionAmount,
+        penalty: penalty,
+        maxParticipant: maxParticipant,
+        name,
+        description,
+        nftContract,
+        daoContract,
+        t_state,
+        lastUpdateTimestamp: lastUpdateTimestamp,
+      };
+
+      return thriftData;
+    });
 
     try {
-      const contractPromises = thriftContracts.map(async (contractAddress) => {
-        const contract = new ethers.Contract(
-          contractAddress,
-          ThriftClub.abi,
-          signer
-        );
-        const thriftClubData = await contract.getThriftClubData();
-
-        const [
-          token,
-          cycleDuration,
-          contributionAmount,
-          penalty,
-          maxParticipant,
-          name,
-          description,
-          nftContract,
-          daoContract,
-          t_state,
-          lastUpdateTimestamp,
-        ] = thriftClubData;
-
-        const thriftData = {
-          token,
-          cycleDuration: cycleDuration,
-          contributionAmount: contributionAmount,
-          penalty: penalty,
-          maxParticipant: maxParticipant,
-          name,
-          description,
-          nftContract,
-          daoContract,
-          t_state,
-          lastUpdateTimestamp: lastUpdateTimestamp,
-        };
-
-        return thriftData;
-      });
-
       const results = await Promise.all(contractPromises);
       console.log(results);
-
       setThriftDataList(results);
     } catch (error) {
       console.log(error);
     }
   }
+
+  useEffect(() => {
+    async function fetchData() {
+      await getThrifts();
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && thriftContracts.length > 0) {
+      getThriftDetails();
+    }
+  }, [thriftContracts]);
 
   return (
     <>
