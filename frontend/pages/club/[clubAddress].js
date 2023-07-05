@@ -242,9 +242,6 @@ const Dashboard = ({
   url,
   clubAddress,
 }) => {
-  console.log("T_State:  ", t_state);
-  console.log("T_State:  ", typeof t_state);
-
   const address = useAddress();
 
   const [tokenAllowance, setTokenAllowance] = useState(false);

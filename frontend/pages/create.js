@@ -32,7 +32,7 @@ function Create() {
 
   // Thirdweb
   const { contract } = useContract(
-    "0x11277e0BEACe37deBEF8578619A2afC3F66ab4F1"
+    "0x1483EfE8025cCf49b529AE93dc4C1dD7720a2A24"
   );
   const { mutateAsync: createThriftClub, isLoading } = useContractWrite(
     contract,

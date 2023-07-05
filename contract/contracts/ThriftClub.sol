@@ -6,9 +6,16 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
+// import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+
+// Chainlink VRF
+// import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+// import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
+
+// Moonbeam VRF
+import "./Randomness.sol";
+import {RandomnessConsumer} from "./RandomnessConsumer.sol";
+
 // Imports token price conversioner library
 import "./PriceConverter.sol";
 import "./DAOContract.sol";
@@ -16,9 +23,9 @@ import "./DAOContract.sol";
 import "./NFTContract.sol";
 import "./IDAOContract.sol";
 
-error __TransferFailed();
+// error __TransferFailed();
 
-contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
+contract ThriftClub is IERC721Receiver, RandomnessConsumer {
     enum TANDA_STATE {
         OPEN,
         CLOSED,
@@ -43,12 +50,12 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
 
     uint256 paidParticipants = 0;
 
-    VRFCoordinatorV2Interface COORDINATOR;
-    LinkTokenInterface LINKTOKEN;
+    // VRFCoordinatorV2Interface COORDINATOR;
+    // LinkTokenInterface LINKTOKEN;
     // CHANGE THIS TO POLYGON MUMBAI
     // Sepolia coordinator. For other networks,
     // see https://docs.chain.link/docs/vrf-contracts/#configurations
-    address vrfCoordinator = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
+    // address vrfCoordinator = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
 
     // Sepolia LINK token contract. For other networks, see
     // https://docs.chain.link/docs/vrf-contracts/#configurations
@@ -116,6 +123,25 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
     event CycleStarted(address indexed winner);
     event AddressPaid(address recipient, uint256 amount);
 
+    // -------- Variables for Moonbeam VRF precompile -----
+    // The Randomness Precompile Interface
+    Randomness public randomness =
+        Randomness(0x0000000000000000000000000000000000000809);
+
+    // Variables required for randomness requests
+    uint256 public requiredDeposit = randomness.requiredDeposit();
+    uint64 public FULFILLMENT_GAS_LIMIT = 100000;
+    // The fee can be set to any value as long as it is enough to cover
+    // the fulfillment costs. Any leftover fees will be refunded to the
+    // refund address specified in the requestRandomness function below
+    uint256 public MIN_FEE = FULFILLMENT_GAS_LIMIT * 5 gwei;
+    uint32 public VRF_BLOCKS_DELAY = MIN_VRF_BLOCKS_DELAY;
+    bytes32 public SALT_PREFIX = "change-me-to-anything";
+
+    // Storage variables for the current request
+    uint256 public requestId;
+
+    // uint256[] public random;
     constructor(
         address _token,
         uint256 _cycleDuration,
@@ -126,9 +152,11 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         string memory _description,
         address _nftContract,
         address _daoContract
-    ) VRFConsumerBaseV2(vrfCoordinator) {
-        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
-        LINKTOKEN = LinkTokenInterface(link_token_contract);
+    ) payable RandomnessConsumer() {
+        require(msg.value >= requiredDeposit);
+
+        // COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+        // LINKTOKEN = LinkTokenInterface(link_token_contract);
         // Hard code these for now
         i_priceFeedNative = AggregatorV3Interface(
             0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada
@@ -323,38 +351,11 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         return this.onERC721Received.selector;
     }
 
-    function requestRandomWords() internal {
-        // Will revert if subscription is not set and funded.
-        s_requestId = COORDINATOR.requestRandomWords(
-            keyHash,
-            s_subscriptionId,
-            requestConfirmations,
-            callbackGasLimit,
-            numWords
-        );
-    }
+    function requestRandomness() public payable {
+        // Make sure that the value sent is enough
+        require(msg.value >= MIN_FEE);
+        // Request local VRF randomness
 
-    function checkUpkeep(
-        bytes calldata checkData
-    ) external returns (bool upkeepNeeded, bytes memory performData) {
-        // ThriftClubData s_thriftClubData
-        TANDA_STATE currState = s_thriftClub.t_state;
-        uint256 lastUpdateTimestamp = s_thriftClub.lastUpdateTimestamp;
-        uint256 cycleDuration = s_thriftClub.cycleDuration;
-
-        if (
-            currState == TANDA_STATE.PAYMENT_IN_PROGRESS &&
-            block.timestamp > lastUpdateTimestamp + cycleDuration
-        ) {
-            upkeepNeeded = true;
-        } else {
-            upkeepNeeded = false;
-        }
-
-        performData = checkData;
-    }
-
-    function performUpkeep(bytes calldata performData) external {
         TANDA_STATE currState = s_thriftClub.t_state;
         uint256 lastUpdateTimestamp = s_thriftClub.lastUpdateTimestamp;
         uint256 cycleDuration = s_thriftClub.cycleDuration;
@@ -365,18 +366,37 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         ) {
             // Perform the necessary actions for when the payment period is over
             // For example, distribute rewards or proceed to the next cycle
-            requestRandomWords();
+            // requestRandomWords();
+            requestId = randomness.requestLocalVRFRandomWords(
+                msg.sender, // Refund address
+                msg.value, // Fulfillment fee
+                FULFILLMENT_GAS_LIMIT, // Gas limit for the fulfillment
+                SALT_PREFIX ^ bytes32(requestId++), // A salt to generate unique results
+                1, // Number of random words
+                VRF_BLOCKS_DELAY // Delay before request can be fulfilled
+            );
         }
+        // requestId = randomness.requestLocalVRFRandomWords(
+        //     msg.sender, // Refund address
+        //     msg.value, // Fulfillment fee
+        //     FULFILLMENT_GAS_LIMIT, // Gas limit for the fulfillment
+        //     SALT_PREFIX ^ bytes32(requestId++), // A salt to generate unique results
+        //     1, // Number of random words
+        //     VRF_BLOCKS_DELAY // Delay before request can be fulfilled
+        // );
+    }
 
-        // Perform any other necessary upkeep tasks
-
-        performData;
+    function fulfillRequest() public {
+        randomness.fulfillRequest(requestId);
     }
 
     function fulfillRandomWords(
         uint256 /* requestId */,
         uint256[] memory randomWords
     ) internal override {
+        // Save the randomness results
+        // random = randomWords;
+
         s_randomWords = randomWords;
         // do other stuff, like call winner function to send to pot to the winner
         uint256 winnerIndex = s_randomWords[0] % participants.length;
@@ -392,9 +412,10 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
         if (ThriftPurseBalance > 0) {
             // payable(winner).transfer(ThriftPurseBalance);
             (bool success, ) = msg.sender.call{value: ThriftPurseBalance}("");
-            if (!success) {
-                revert __TransferFailed();
-            }
+            // if (!success) {
+            //     revert __TransferFailed();
+            // }
+            require(success, "Transaction failed");
             emit AddressPaid(winner, ThriftPurseBalance);
             ThriftPurseBalance = 0;
         } else if (ThriftPurseTokenBalance[s_thriftClub.token] > 0) {
@@ -406,9 +427,11 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
                 msg.sender,
                 ThriftPurseTokenBalance[s_thriftClub.token]
             );
-            if (!success) {
-                revert __TransferFailed();
-            }
+            // if (!success) {
+            //     revert __TransferFailed();
+            // }
+            require(success, "Transaction failed");
+
             emit AddressPaid(
                 winner,
                 ThriftPurseTokenBalance[s_thriftClub.token]
@@ -442,13 +465,5 @@ contract ThriftClub is IERC721Receiver, VRFConsumerBaseV2 {
                 s_thriftClub.t_state,
                 s_thriftClub.lastUpdateTimestamp
             );
-    }
-
-    function setSubscriptionId(uint64 subscriptionId) internal {
-        s_subscriptionId = subscriptionId;
-    }
-
-    function getSubscriptionId() public view returns (uint64) {
-        return s_subscriptionId;
     }
 }
